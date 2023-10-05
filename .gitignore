@@ -6,4 +6,4 @@ tmp/
 temp/
 
 # Database configuration file
-src/data-source
+data-source
