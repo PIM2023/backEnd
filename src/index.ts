@@ -29,7 +29,7 @@ AppDataSource.initialize().then(async () => {
 
     // start express server
     app.listen(3000)
-
+ 
     // insert new users for test
     await AppDataSource.manager.save(
         AppDataSource.manager.create(User, {

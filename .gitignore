@@ -4,6 +4,4 @@ node_modules/
 build/
 tmp/
 temp/
-
-# Database configuration file
-data-source
+.env
