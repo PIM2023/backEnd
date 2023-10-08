@@ -14,9 +14,6 @@ AppDataSource.initialize()
     // Routes
     app.use(router);
 
-    // setup express app here
-    // ...
-
     // start express server
     app.listen(3000);
 

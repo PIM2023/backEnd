@@ -12,6 +12,7 @@ export const all = async (req: Request, res: Response) => {
 
 export const one = async (req: Request, res: Response) => {
   const { id } = req.params;
+
   const user = await userRepository.findOneBy({ id });
 
   if (user) {
