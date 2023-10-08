@@ -1,19 +1,22 @@
-import "reflect-metadata"
-import { DataSource } from "typeorm"
-import { User } from "./entity/User"
-import * as dotenv from 'dotenv';
+import "reflect-metadata";
+import { DataSource } from "typeorm";
+
+import * as dotenv from "dotenv";
 dotenv.config();
 
+const loggingEnabled = process.env.LOGGING_ENABLED === "true";
+const synchronizeEnabled = process.env.SYNCRONIZE_ENABLED === "true";
+
 export const AppDataSource = new DataSource({
-    type: "mysql",
-    host: "localhost",
-    port: 3306,
-    username: process.env.MYSQL_USER,
-    password: process.env.MYSQL_PASSWORD,
-    database: process.env.MYSQL_DATABASE,
-    synchronize: true,
-    logging: false,
-    entities: [User],
-    migrations: [],
-    subscribers: [],
-})
+  type: "mysql",
+  host: "localhost",
+  port: 3306,
+  username: process.env.MYSQL_USER,
+  password: process.env.MYSQL_PASSWORD,
+  database: process.env.MYSQL_DATABASE,
+  synchronize: synchronizeEnabled,
+  logging: loggingEnabled,
+  entities: ["src/entity/*.ts"],
+  migrations: ["src/migration/*.ts"],
+  subscribers: ["src/subscriber/*.ts"],
+});
