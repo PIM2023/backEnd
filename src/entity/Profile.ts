@@ -1,41 +1,45 @@
 import {
   Entity,
-  PrimaryGeneratedColumn,
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  PrimaryGeneratedColumn,
   OneToOne,
-  PrimaryColumn,
-  JoinColumn,
-  Double,
 } from "typeorm";
 import { User } from "./User";
-import internal = require("stream");
-  
+
 @Entity()
 export class Profile {
-  @OneToOne(() => User)
-  @JoinColumn()
-  user: User;
-
-  @PrimaryColumn({ length: 50 })
-  username: String;
+  @PrimaryGeneratedColumn()
+  id: number;
 
   @Column()
-  photo: String;
+  firstName: string;
 
   @Column()
-  height: internal;
+  lastName: string;
 
   @Column()
-  weigth: Double;
+  age: number;
 
-  @Column()
+  @Column({ nullable: true })
+  avatar: String;
+
+  @Column({ nullable: true })
+  height: Number;
+
+  @Column({ nullable: true })
+  weigth: Number;
+
+  @Column({ nullable: true })
   bornDate: Date;
 
-	@CreateDateColumn()
+  @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToOne(() => User, (user) => user.profile)
+  user: User;
 }

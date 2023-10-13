@@ -4,25 +4,33 @@ import {
   Column,
   CreateDateColumn,
   UpdateDateColumn,
+  OneToOne,
+  JoinColumn,
+  PrimaryColumn,
 } from "typeorm";
+import { Profile } from "./Profile";
 
 @Entity()
 export class User {
   @PrimaryGeneratedColumn()
   id: number;
 
-  @Column()
-  firstName: string;
+  @PrimaryColumn({ length: 50 })
+  username: String;
+
+  @PrimaryColumn()
+  email: String;
 
   @Column()
-  lastName: string;
-
-  @Column()
-  age: number;
+  password: String;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
+
+  @OneToOne(() => Profile)
+  @JoinColumn()
+  profile: Profile;
 }
