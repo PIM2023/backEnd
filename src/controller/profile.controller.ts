@@ -14,8 +14,8 @@ export const all = async (req: Request, res: Response) => {
 
 export const one = async (req: Request, res: Response) => {
   const { id } = req.params;
-
-  const profile = await profileRepository.findOne({ where: { id: id } });
+  const numericId = parseInt(id);
+  const profile = await profileRepository.findOne({ where: { id: numericId } });
 
   if (profile) {
     return res.json(profile);
@@ -31,7 +31,7 @@ export const update = async (req: Request, res: Response) => {};
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
 
-  const profile = await profileRepository.findOne({
+  /*const profile = await profileRepository.findOne({
     relations: {
       user: true,
     },
@@ -42,5 +42,5 @@ export const remove = async (req: Request, res: Response) => {
     await profileRepository.remove(profile);
   } else {
     handleErrorResponse(res, "Profile not found", 404);
-  }
+  }*/
 };
