@@ -34,8 +34,11 @@ export const remove = async (req: Request, res: Response) => {
   const profile = await profileRepository.findOne({ where: { id: numericId } });
   const user = await userRepository.findOneBy({ id: numericId });
 
-  if (profile) {
+  if (profile && user) {
     await userRepository.remove(user);
+    await profileRepository.remove(profile);
+    res.json({ message: "User and Profile deleted" });
+  } else if (profile) {
     await profileRepository.remove(profile);
     res.json({ message: "Profile deleted" });
   } else {
