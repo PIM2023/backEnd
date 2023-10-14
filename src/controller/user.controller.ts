@@ -27,7 +27,7 @@ export const one = async (req: Request, res: Response) => {
 
 export const save = async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.body;
+    const { username, email, password, firstName, lastName, avatar, height, weight, bornDate } = req.body;
 
     const newUser = new User();
     newUser.username = username;
@@ -35,15 +35,20 @@ export const save = async (req: Request, res: Response) => {
     newUser.password = password;
 
     const newProfile = new Profile();
-    newProfile.firstName = "John";
-    newProfile.lastName = "Doe";
-    newProfile.age = 20;
+    newProfile.firstName = firstName;
+    newProfile.lastName = lastName;
+    newProfile.avatar = avatar;
+    newProfile.height = height;
+    newProfile.weight = weight;
+
+    newProfile.bornDate = new Date (bornDate);
+    newProfile.age = Math.floor((Date.now() - newProfile.bornDate.getTime()) / 1000 / 60 / 60 / 24 / 365);
 
     newUser.profile = newProfile;
 
+    profileRepository.save(newProfile);      
     const savedUser = await userRepository.save(newUser);
-    profileRepository.save(newProfile);
-
+    
     res.json(savedUser);
   } catch (error) {
     console.error(error);
@@ -51,6 +56,22 @@ export const save = async (req: Request, res: Response) => {
   }
 };
 
-export const update = async (req: Request, res: Response) => {};
+export const update = async (req: Request, res: Response) => {
+  
+};
 
-export const remove = async (req: Request, res: Response) => {};
+export const remove = async (req: Request, res: Response) => {
+  const { id } = req.params;
+  const numericId = parseInt(id);
+  const user = await userRepository.findOneBy({ id: numericId });
+  const profile = await profileRepository.findOneBy({ id: numericId });
+
+  if (user) {
+    await profileRepository.remove(profile);
+    await userRepository.remove(user);
+    res.json({ message: "User deleted" });
+  } else {
+    handleErrorResponse(res, "User not found", 404);
+  }
+
+};

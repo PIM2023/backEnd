@@ -5,6 +5,7 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   OneToOne,
+  JoinColumn,
 } from "typeorm";
 import { User } from "./User";
 
@@ -29,9 +30,9 @@ export class Profile {
   height: Number;
 
   @Column({ nullable: true })
-  weigth: Number;
+  weight: Number;
 
-  @Column({ nullable: true })
+  @Column()
   bornDate: Date;
 
   @CreateDateColumn()
