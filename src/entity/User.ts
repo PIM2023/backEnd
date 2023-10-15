@@ -31,7 +31,7 @@ export class User {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => Profile)
+  @OneToOne(() => Profile, { cascade: true, onDelete: "CASCADE" })
   @JoinColumn()
   profile: Profile;
 }

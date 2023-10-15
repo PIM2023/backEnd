@@ -105,19 +105,24 @@ export const update = async (req: Request, res: Response) => {
 };
 
 export const remove = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const numericId = parseInt(id);
-  const user = await userRepository.findOneBy({ id: numericId });
-  const profile = await profileRepository.findOneBy({ id: numericId });
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id);
 
-  if (user && profile) {
-    await profileRepository.remove(profile);
+    const user = await userRepository.findOne({
+      where: { id: numericId },
+      relations: { profile: true },
+    });
+
+    if (!user) return handleErrorResponse(res, "Usuario no encontrado", 404);
+
+    console.log(user.profile);
+
+    await profileRepository.remove(user.profile);
     await userRepository.remove(user);
-    res.json({ message: "User and Profile deleted" });
-  } else if (user) {
-    await userRepository.remove(user);
-    res.json({ message: "User deleted" });
-  } else {
-    handleErrorResponse(res, "User not found", 404);
+
+    return res.json("Usuario eliminado");
+  } catch (error) {
+    handleErrorResponse(res, "Error al eliminar el usuario", 500);
   }
 };

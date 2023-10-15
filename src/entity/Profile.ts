@@ -41,9 +41,6 @@ export class Profile {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => User, (user) => user.profile, {
-    cascade: true,
-    onDelete: "CASCADE",
-  })
+  @OneToOne(() => User, (user) => user.profile)
   user: User;
 }
