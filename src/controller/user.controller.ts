@@ -3,7 +3,6 @@ import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
-import { profile } from "console";
 
 const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
@@ -13,7 +12,7 @@ export const all = async (req: Request, res: Response) => {
   return res.json(users);
 };
 
-export const one = async (req: Request, res: Response) => {
+export const getById = async (req: Request, res: Response) => {
   const { id } = req.params;
   const numericId = parseInt(id);
   const user = await userRepository.findOneBy({ id: numericId });
@@ -25,7 +24,7 @@ export const one = async (req: Request, res: Response) => {
   }
 };
 
-export const save = async (req: Request, res: Response) => {
+export const create = async (req: Request, res: Response) => {
   try {
     const {
       username,
@@ -70,7 +69,40 @@ export const save = async (req: Request, res: Response) => {
   }
 };
 
-export const update = async (req: Request, res: Response) => {};
+export const update = async (req: Request, res: Response) => {
+  try {
+    const userId = req.params.id;
+    const { email, firstName, lastName, avatar, height, weight, bornDate } =
+      req.body;
+
+    const numericId = parseInt(userId);
+    const user = await userRepository.findOneBy({ id: numericId });
+
+    if (!user) return handleErrorResponse(res, "Usuario no encontrado", 404);
+
+    const profile = user.profile;
+
+    if (email) user.email = email;
+    if (firstName) profile.firstName = firstName;
+    if (lastName) profile.lastName = lastName;
+    if (avatar) profile.avatar = avatar;
+    if (height) profile.height = height;
+    if (weight) profile.weight = weight;
+    if (bornDate) {
+      profile.bornDate = new Date(bornDate);
+      profile.age = Math.floor(
+        (Date.now() - profile.bornDate.getTime()) / 1000 / 60 / 60 / 24 / 365
+      );
+    }
+
+    profileRepository.save(profile);
+    userRepository.save(user);
+
+    res.json(user);
+  } catch (error) {
+    handleErrorResponse(res, "Error al actualizar el usuario", 500);
+  }
+};
 
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
