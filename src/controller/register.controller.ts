@@ -28,6 +28,16 @@ export const register = async (req: Request, res: Response) => {
       );
     }
 
+    const existUsername = await userRepository.findOneBy({ username });
+    if (existUsername) {
+      return handleErrorResponse(res, "El usuario ya existe", 400);
+    }
+
+    const existEmail = await userRepository.findOneBy({ email });
+    if (existEmail) {
+      return handleErrorResponse(res, "El email ya existe", 400);
+    }
+
     const newUser = new User();
     newUser.username = username;
     newUser.email = email;

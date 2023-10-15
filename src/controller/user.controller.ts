@@ -8,19 +8,27 @@ const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
 
 export const all = async (req: Request, res: Response) => {
-  const users = await userRepository.find();
-  return res.json(users);
+  try {
+    const users = await userRepository.find();
+    return res.json(users);
+  } catch (error) {
+    handleErrorResponse(res, "Error al obtener los usuarios", 500);
+  }
 };
 
 export const getById = async (req: Request, res: Response) => {
-  const { id } = req.params;
-  const numericId = parseInt(id);
-  const user = await userRepository.findOneBy({ id: numericId });
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id);
+    const user = await userRepository.findOneBy({ id: numericId });
 
-  if (user) {
-    return res.json(user);
-  } else {
-    handleErrorResponse(res, "User not found", 404);
+    if (user) {
+      return res.json(user);
+    } else {
+      handleErrorResponse(res, "User not found", 404);
+    }
+  } catch (error) {
+    handleErrorResponse(res, "Error al obtener el usuario", 500);
   }
 };
 
@@ -124,5 +132,36 @@ export const remove = async (req: Request, res: Response) => {
     return res.json("Usuario eliminado");
   } catch (error) {
     handleErrorResponse(res, "Error al eliminar el usuario", 500);
+  }
+};
+
+export const checkUsername = async (req: Request, res: Response) => {
+  try {
+    const { username } = req.body;
+    const user = await userRepository.findOneBy({ username: username });
+
+    console.log(user);
+    if (user) {
+      return res.json({ exist: true });
+    } else {
+      return res.json({ exist: false });
+    }
+  } catch (error) {
+    handleErrorResponse(res, "Error al verificar el usuario", 500);
+  }
+};
+
+export const checkEmail = async (req: Request, res: Response) => {
+  try {
+    const { email } = req.body;
+    const user = await userRepository.findOneBy({ email: email });
+
+    if (user) {
+      return res.json({ exist: true });
+    } else {
+      return res.json({ exist: false });
+    }
+  } catch (error) {
+    handleErrorResponse(res, "Error al verificar el email", 500);
   }
 };

@@ -7,7 +7,6 @@ import {
   OneToOne,
   JoinColumn,
   PrimaryColumn,
-  DeleteDateColumn,
 } from "typeorm";
 import { Profile } from "./Profile";
 

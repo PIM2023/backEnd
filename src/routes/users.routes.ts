@@ -8,5 +8,7 @@ router.get("/:id", userController.getById);
 router.post("", userController.create);
 router.put("/:id", userController.update);
 router.delete("/:id", userController.remove);
+router.post("/checkUsername", userController.checkUsername);
+router.post("/checkEmail", userController.checkEmail);
 
 export default router;
