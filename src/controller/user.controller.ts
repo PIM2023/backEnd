@@ -27,7 +27,17 @@ export const one = async (req: Request, res: Response) => {
 
 export const save = async (req: Request, res: Response) => {
   try {
-    const { username, email, password, firstName, lastName, avatar, height, weight, bornDate } = req.body;
+    const {
+      username,
+      email,
+      password,
+      firstName,
+      lastName,
+      avatar,
+      height,
+      weight,
+      bornDate,
+    } = req.body;
 
     const newUser = new User();
     newUser.username = username;
@@ -40,25 +50,27 @@ export const save = async (req: Request, res: Response) => {
     newProfile.avatar = avatar;
     newProfile.height = height;
     newProfile.weight = weight;
-
-    newProfile.bornDate = new Date (bornDate);
-    newProfile.age = Math.floor((Date.now() - newProfile.bornDate.getTime()) / 1000 / 60 / 60 / 24 / 365);
+    newProfile.bornDate = new Date(bornDate);
+    newProfile.age = Math.floor(
+      (Date.now() - newProfile.bornDate.getTime()) / 1000 / 60 / 60 / 24 / 365
+    );
 
     newUser.profile = newProfile;
 
-    profileRepository.save(newProfile);      
     const savedUser = await userRepository.save(newUser);
-    
+    profileRepository.save(newProfile);
+
     res.json(savedUser);
   } catch (error) {
-    console.error(error);
-    handleErrorResponse(res, "Error al guardar el usuario", 500);
+    if (error.code === "ER_DUP_ENTRY") {
+      handleErrorResponse(res, "El usuario ya existe", 400);
+    } else {
+      handleErrorResponse(res, "Error al guardar el usuario", 500);
+    }
   }
 };
 
-export const update = async (req: Request, res: Response) => {
-  
-};
+export const update = async (req: Request, res: Response) => {};
 
 export const remove = async (req: Request, res: Response) => {
   const { id } = req.params;
@@ -70,11 +82,10 @@ export const remove = async (req: Request, res: Response) => {
     await profileRepository.remove(profile);
     await userRepository.remove(user);
     res.json({ message: "User and Profile deleted" });
-  } else if (user){
+  } else if (user) {
     await userRepository.remove(user);
     res.json({ message: "User deleted" });
-  } else{
+  } else {
     handleErrorResponse(res, "User not found", 404);
   }
-
 };

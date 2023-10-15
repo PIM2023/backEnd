@@ -32,7 +32,7 @@ export class Profile {
   @Column({ nullable: true })
   weight: Number;
 
-  @Column()
+  @Column({ nullable: true })
   bornDate: Date;
 
   @CreateDateColumn()
@@ -41,6 +41,9 @@ export class Profile {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToOne(() => User, (user) => user.profile)
+  @OneToOne(() => User, (user) => user.profile, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
   user: User;
 }

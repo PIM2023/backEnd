@@ -19,7 +19,7 @@ export class User {
   @PrimaryColumn({ length: 50 })
   username: String;
 
-  @PrimaryColumn()
+  @Column({ unique: true })
   email: String;
 
   @Column()
