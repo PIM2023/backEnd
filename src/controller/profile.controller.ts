@@ -2,10 +2,8 @@ import { Request, Response } from "express";
 import { Profile } from "../entity/Profile";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
-import { User } from "../entity/User";
 
 const profileRepository = dataSource.getRepository(Profile);
-const userRepository = dataSource.getRepository(User);
 
 export const all = async (req: Request, res: Response) => {
   const profiles = await profileRepository.find();
