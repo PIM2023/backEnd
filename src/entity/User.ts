@@ -35,7 +35,4 @@ export class User {
   @OneToOne(() => Profile, { cascade: true, onDelete: "CASCADE" })
   @JoinColumn()
   profile: Profile;
-
-  @ManyToOne(() => Post, (post) => post.user)
-  posts: Post[];
 }

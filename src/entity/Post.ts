@@ -32,7 +32,4 @@ export class Post {
 
   // faltaría Clave ajena de user no?
   // profile tmb dependiendo de cómo interpretemos el diagrama de clases
-
-  @OneToMany(() => User, (user) => user.posts)
-  user: User; // qué es esto
 }

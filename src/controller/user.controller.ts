@@ -33,7 +33,6 @@ export const getById = async (req: Request, res: Response) => {
   }
 };
 
-
 export const update = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
@@ -125,8 +124,7 @@ export const checkEmail = async (req: Request, res: Response) => {
 
 export const getProfiles = async (req: Request, res: Response) => {
   try {
-    
   } catch (error) {
-    handleErrorResponse(res, "Error ")
+    handleErrorResponse(res, "Error ");
   }
-}
+};

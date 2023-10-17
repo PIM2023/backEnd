@@ -3,7 +3,6 @@ import {
   PrimaryGeneratedColumn,
   CreateDateColumn,
   UpdateDateColumn,
-  Column,
 } from "typeorm";
 import { Product } from "./Product";
 
@@ -12,6 +11,7 @@ export class Outfit {
   @PrimaryGeneratedColumn()
   id: number;
 
+  /*
   @Column()
   hat: Product;
 
@@ -25,7 +25,7 @@ export class Outfit {
   lowerBody: Product;
 
   @Column()
-  shoes: Product;
+  shoes: Product;*/
 
   @CreateDateColumn()
   createdAt: Date;

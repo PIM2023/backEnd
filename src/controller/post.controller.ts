@@ -25,11 +25,11 @@ export const create = async (req: Request, res: Response) => {
     newPost.image = image;
     newPost.likes = 0;
 
-    const currentUser = await userRepository.findOneBy({ id: id }); //mejorar
-    const currentUserProfile = await profileRepository.findOneBy({ email });
+    //const currentUser = await userRepository.findOneBy({ id: id }); //mejorar
+    //const currentUserProfile = await profileRepository.findOneBy({ email });
 
-    currentUser.post = newPost;
-    currentUserProfile.post = newPost;
+    //currentUser.post = newPost;
+    //currentUserProfile.post = newPost;
 
     await postRepository.save(newPost);
     const savedPost = await postRepository.save(newPost);
