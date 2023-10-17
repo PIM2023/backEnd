@@ -16,7 +16,7 @@ export const AppDataSource = new DataSource({
   database: process.env.MYSQL_DATABASE,
   synchronize: synchronizeEnabled,
   logging: loggingEnabled,
-  entities: ["src/entity/*.ts"],
+  entities: [process.env.ENTITIES_PATH],
   migrations: [],
   subscribers: [],
 });

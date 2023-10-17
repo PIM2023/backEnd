@@ -1,31 +1,23 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
+  Column,
   CreateDateColumn,
   UpdateDateColumn,
+  ManyToOne,
 } from "typeorm";
-import { Product } from "./Product";
+import { Post } from "./Post";
 
 @Entity()
-export class Outfit {
+export class Comment {
   @PrimaryGeneratedColumn()
   id: number;
 
-  /*
-  @Column()
-  hat: Product;
+  @Column({ type: "text" })
+  content: string;
 
-  @Column()
-  head: Product;
-
-  @Column()
-  uppperBody: Product;
-
-  @Column()
-  lowerBody: Product;
-
-  @Column()
-  shoes: Product;*/
+  @ManyToOne(() => Post, (post) => post.comments)
+  post: Post;
 
   @CreateDateColumn()
   createdAt: Date;

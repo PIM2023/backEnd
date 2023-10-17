@@ -7,8 +7,10 @@ import {
   OneToOne,
   JoinColumn,
   PrimaryColumn,
+  ManyToOne,
 } from "typeorm";
 import { Profile } from "./Profile";
+import { Post } from "./Post";
 
 @Entity()
 export class User {

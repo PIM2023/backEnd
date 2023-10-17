@@ -15,6 +15,7 @@
     "typescript": "^4.5.2"
   },
   "scripts": {
+    "build": "tsc --project tsconfig.json",
     "start": "ts-node src/index.ts",
     "dev": "docker-compose up -d && nodemon --exec ts-node src/index.ts",
     "remove": "docker-compose down",
