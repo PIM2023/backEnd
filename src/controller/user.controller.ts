@@ -3,6 +3,7 @@ import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
+import exp = require("constants");
 
 const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
@@ -32,50 +33,6 @@ export const getById = async (req: Request, res: Response) => {
   }
 };
 
-export const create = async (req: Request, res: Response) => {
-  try {
-    const {
-      username,
-      email,
-      password,
-      firstName,
-      lastName,
-      avatar,
-      height,
-      weight,
-      bornDate,
-    } = req.body;
-
-    const newUser = new User();
-    newUser.username = username;
-    newUser.email = email;
-    newUser.password = password;
-
-    const newProfile = new Profile();
-    newProfile.firstName = firstName;
-    newProfile.lastName = lastName;
-    newProfile.avatar = avatar;
-    newProfile.height = height;
-    newProfile.weight = weight;
-    newProfile.bornDate = new Date(bornDate);
-    newProfile.age = Math.floor(
-      (Date.now() - newProfile.bornDate.getTime()) / 1000 / 60 / 60 / 24 / 365
-    );
-
-    newUser.profile = newProfile;
-
-    const savedUser = await userRepository.save(newUser);
-    profileRepository.save(newProfile);
-
-    res.json(savedUser);
-  } catch (error) {
-    if (error.code === "ER_DUP_ENTRY") {
-      handleErrorResponse(res, "El usuario ya existe", 400);
-    } else {
-      handleErrorResponse(res, "Error al guardar el usuario", 500);
-    }
-  }
-};
 
 export const update = async (req: Request, res: Response) => {
   try {
@@ -165,3 +122,11 @@ export const checkEmail = async (req: Request, res: Response) => {
     handleErrorResponse(res, "Error al verificar el email", 500);
   }
 };
+
+export const getProfiles = async (req: Request, res: Response) => {
+  try {
+    
+  } catch (error) {
+    handleErrorResponse(res, "Error ")
+  }
+}
