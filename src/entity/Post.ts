@@ -1,31 +1,26 @@
 import {
   Entity,
   PrimaryGeneratedColumn,
+  Column,
   CreateDateColumn,
   UpdateDateColumn,
-  Column,
+  OneToMany,
 } from "typeorm";
-import { Product } from "./Product";
+import { Comment } from "./Comment";
 
 @Entity()
-export class Outfit {
+export class Post {
   @PrimaryGeneratedColumn()
   id: number;
 
   @Column()
-  hat: Product;
+  title: string;
 
-  @Column()
-  head: Product;
+  @Column({ type: "text" })
+  content: string;
 
-  @Column()
-  uppperBody: Product;
-
-  @Column()
-  lowerBody: Product;
-
-  @Column()
-  shoes: Product;
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
 
   @CreateDateColumn()
   createdAt: Date;
