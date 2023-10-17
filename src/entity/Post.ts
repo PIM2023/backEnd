@@ -1,34 +1,38 @@
 import {
-    Entity,
-    Column,
-    CreateDateColumn,
-    UpdateDateColumn,
-    PrimaryGeneratedColumn,
-    OneToOne,
-    JoinColumn,
-  } from "typeorm";
-  import { User } from "./User";
-  
+  Entity,
+  Column,
+  CreateDateColumn,
+  UpdateDateColumn,
+  PrimaryGeneratedColumn,
+  OneToOne,
+  JoinColumn,
+  OneToMany,
+} from "typeorm";
+import { User } from "./User";
+import { Comment } from "./Comment";
+
 // revisar import, solo lo he copiado de profile
 
-  @Entity()
-  export class Post {
-    @PrimaryGeneratedColumn()
-    cod_pub: Number;
-  
-    @Column({ nullable: true })
-    text: String;
-  
-    @Column()
-    image: String;
-  
-    @Column()
-    likes: Number;
-  
-    // faltaría Clave ajena de user no? 
-    // profile tmb dependiendo de cómo interpretemos el diagrama de clases
+@Entity()
+export class Post {
+  @PrimaryGeneratedColumn()
+  cod_pub: Number;
 
-    @OneToOne(() => User, (user) => user.profile)
-    user: User;  // qué es esto
-  }
-  
+  @Column({ nullable: true })
+  text: String;
+
+  @Column()
+  image: String;
+
+  @Column()
+  likes: Number;
+
+  @OneToMany(() => Comment, (comment) => comment.post)
+  comments: Comment[];
+
+  // faltaría Clave ajena de user no?
+  // profile tmb dependiendo de cómo interpretemos el diagrama de clases
+
+  @OneToMany(() => User, (user) => user.posts)
+  user: User; // qué es esto
+}

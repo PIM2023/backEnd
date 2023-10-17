@@ -7,8 +7,10 @@ import {
   OneToOne,
   JoinColumn,
   PrimaryColumn,
+  ManyToOne,
 } from "typeorm";
 import { Profile } from "./Profile";
+import { Post } from "./Post";
 
 @Entity()
 export class User {
@@ -33,4 +35,7 @@ export class User {
   @OneToOne(() => Profile, { cascade: true, onDelete: "CASCADE" })
   @JoinColumn()
   profile: Profile;
+
+  @ManyToOne(() => Post, (post) => post.user)
+  posts: Post[];
 }
