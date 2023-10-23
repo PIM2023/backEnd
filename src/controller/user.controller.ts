@@ -3,7 +3,6 @@ import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
-import exp = require("constants");
 
 const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
