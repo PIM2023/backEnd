@@ -119,9 +119,36 @@ export const checkEmail = async (req: Request, res: Response) => {
   }
 };
 
-export const getProfiles = async (req: Request, res: Response) => {
+export const getProfile = async (req: Request, res: Response) => {
   try {
+    var url = require("url");
+    const querystring = require("querystring");
+    const url_parts = url.parse(req.url, true);
+    let query = querystring.parse(url_parts.query);
+
+    if (query.usernmae) {
+      const user = await userRepository.findOne({
+        where: { username: query.username },
+        relations: { profile: true },
+      });
+
+      if (user) {
+        return res.json(user);
+      } else {
+        handleErrorResponse(res, "Perfil no encontrado", 404);
+      }
+    } else {
+      const user = await userRepository.findOne({
+        relations: { profile: true },
+      });
+
+      if (user) {
+        return res.json(user);
+      } else {
+        handleErrorResponse(res, "Perfil no encontrado", 404);
+      }
+    }
   } catch (error) {
-    handleErrorResponse(res, "Error ");
+    handleErrorResponse(res, "Error al solicitar el perfil", 500);
   }
 };

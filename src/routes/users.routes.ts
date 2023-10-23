@@ -9,6 +9,5 @@ router.put("/:id", userController.update);
 router.delete("/:id", userController.remove);
 router.post("/checkUsername", userController.checkUsername);
 router.post("/checkEmail", userController.checkEmail);
-router.get("/getProfiles", userController.getProfiles);
-
+router.get("/getProfiles", userController.getProfile);
 export default router;
