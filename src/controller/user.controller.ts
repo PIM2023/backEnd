@@ -25,7 +25,7 @@ export const getById = async (req: Request, res: Response) => {
     if (user) {
       return res.json(user);
     } else {
-      handleErrorResponse(res, "User not found", 404);
+      handleErrorResponse(res, "User no encontrado", 404);
     }
   } catch (error) {
     handleErrorResponse(res, "Error al obtener el usuario", 500);
@@ -78,8 +78,6 @@ export const remove = async (req: Request, res: Response) => {
     });
 
     if (!user) return handleErrorResponse(res, "Usuario no encontrado", 404);
-
-    console.log(user.profile);
 
     await profileRepository.remove(user.profile);
     await userRepository.remove(user);

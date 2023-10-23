@@ -7,7 +7,7 @@ import {
   OneToOne,
   JoinColumn,
   PrimaryColumn,
-  ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { Profile } from "./Profile";
 import { Post } from "./Post";
@@ -35,4 +35,7 @@ export class User {
   @OneToOne(() => Profile, { cascade: true, onDelete: "CASCADE" })
   @JoinColumn()
   profile: Profile;
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 }
