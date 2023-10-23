@@ -24,13 +24,13 @@ export class Profile {
   age: number;
 
   @Column({ nullable: true })
-  avatar: String;
+  avatar: string;
 
   @Column({ nullable: true })
-  height: Number;
+  height: number;
 
   @Column({ nullable: true })
-  weight: Number;
+  weight: number;
 
   @Column({ nullable: true })
   bornDate: Date;

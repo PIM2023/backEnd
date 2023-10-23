@@ -6,8 +6,8 @@ export class Tag {
   id: number;
 
   @Column()
-  name: String;
+  name: string;
 
   @Column({ nullable: true })
-  description: String;
+  description: string;
 }

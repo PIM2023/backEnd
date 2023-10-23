@@ -18,13 +18,13 @@ export class User {
   id: number;
 
   @PrimaryColumn({ length: 50 })
-  username: String;
+  username: string;
 
   @Column({ unique: true })
-  email: String;
+  email: string;
 
   @Column()
-  password: String;
+  password: string;
 
   @CreateDateColumn()
   createdAt: Date;

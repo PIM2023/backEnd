@@ -4,6 +4,8 @@ import {
   PrimaryGeneratedColumn,
   OneToMany,
   ManyToOne,
+  CreateDateColumn,
+  UpdateDateColumn,
 } from "typeorm";
 import { User } from "./User";
 import { Comment } from "./Comment";
@@ -11,16 +13,22 @@ import { Comment } from "./Comment";
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
-  id: Number;
+  id: number;
 
   @Column({ nullable: true })
-  text: String;
+  text: string;
 
   @Column()
-  image: String;
+  image: string;
 
   @Column()
-  likes: Number;
+  likes: number;
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 
   @OneToMany(() => Comment, (comment) => comment.post)
   comments: Comment[];

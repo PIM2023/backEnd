@@ -18,16 +18,16 @@ export class Product {
   id: number;
 
   @PrimaryColumn()
-  code: String;
+  code: string;
 
   @Column()
-  name: String;
+  name: string;
 
   @Column({ nullable: true })
-  description: String;
+  description: string;
 
   @Column()
-  image: String;
+  image: string;
 
   @ManyToOne(() => Gender, (gender) => gender.product)
   gender: Gender;
