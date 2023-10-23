@@ -40,7 +40,7 @@ export const remove = async (req: Request, res: Response) => {
     const { postId } = req.params;
     const numericId = parseInt(postId);
 
-    const post = await postRepository.findOneBy(numericId);
+    const post = await postRepository.findOneBy({ id: 1 });
 
     if (!post) return handleErrorResponse(res, "Post no encontrado", 404);
 
@@ -54,7 +54,8 @@ export const remove = async (req: Request, res: Response) => {
 export const getById = async (req: Request, res: Response) => {
   try {
     const { postId } = req.params;
-    const post = await postRepository.findOneBy(postId);
+    const numericId = parseInt(postId);
+    const post = await postRepository.findOneBy({ id: numericId });
     //FIXME igual falta parsearlo a int
 
     if (post) {

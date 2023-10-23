@@ -14,9 +14,6 @@ AppDataSource.initialize()
     // Routes
     app.use(router);
 
-    // Populate tables
-    require("./populate");
-
     // start express server
     app.listen(3000);
 
