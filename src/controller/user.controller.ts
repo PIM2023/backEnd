@@ -3,13 +3,17 @@ import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
+import { Equal, FindOperator, FindOptionsWhere } from "typeorm";
+import exp = require("constants");
 
 const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
 
 export const all = async (req: Request, res: Response) => {
   try {
-    const users = await userRepository.find();
+    const users = await userRepository.find({
+      relations: { profile: true },
+    });
     return res.json(users);
   } catch (error) {
     handleErrorResponse(res, "Error al obtener los usuarios", 500);
@@ -121,33 +125,42 @@ export const checkEmail = async (req: Request, res: Response) => {
 
 export const getProfile = async (req: Request, res: Response) => {
   try {
-    var url = require("url");
-    const querystring = require("querystring");
-    const url_parts = url.parse(req.url, true);
-    let query = querystring.parse(url_parts.query);
+    const { id } = req.params;
+    let user;
 
-    if (query.usernmae) {
-      const user = await userRepository.findOne({
-        where: { username: query.username },
+    if (isNaN(Number(id))) {
+      const username = String(id);
+
+      user = await userRepository.find({
+        where: { username: Equal(username) },
         relations: { profile: true },
       });
-
-      if (user) {
-        return res.json(user);
-      } else {
-        handleErrorResponse(res, "Perfil no encontrado", 404);
-      }
     } else {
-      const user = await userRepository.findOne({
+      const numericId = parseInt(id);
+
+      user = await userRepository.find({
+        where: { id: numericId },
         relations: { profile: true },
       });
-
-      if (user) {
-        return res.json(user);
-      } else {
-        handleErrorResponse(res, "Perfil no encontrado", 404);
-      }
     }
+
+    const sanitizedUsers = user.map((user) => {
+      const { id, username, email, profile } = user;
+      return {
+        id,
+        username,
+        email,
+        avatar: profile.avatar,
+        firstName: profile.firstName,
+        lastName: profile.lastName,
+        age: profile.age,
+        height: profile.height,
+        weight: profile.weight,
+        bornDate: profile.bornDate,
+      };
+    });
+
+    return res.json(sanitizedUsers);
   } catch (error) {
     handleErrorResponse(res, "Error al solicitar el perfil", 500);
   }
