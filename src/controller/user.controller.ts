@@ -3,8 +3,7 @@ import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
-import { Equal, FindOperator, FindOptionsWhere } from "typeorm";
-import exp = require("constants");
+import { Equal } from "typeorm";
 
 const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
@@ -43,7 +42,10 @@ export const update = async (req: Request, res: Response) => {
       req.body;
 
     const numericId = parseInt(userId);
-    const user = await userRepository.findOneBy({ id: numericId });
+    const user = await userRepository.findOne({
+      where: { id: numericId },
+      relations: { profile: true },
+    });
 
     if (!user) return handleErrorResponse(res, "Usuario no encontrado", 404);
 
@@ -61,8 +63,7 @@ export const update = async (req: Request, res: Response) => {
         (Date.now() - profile.bornDate.getTime()) / 1000 / 60 / 60 / 24 / 365
       );
     }
-
-    profileRepository.save(profile);
+    user.profile = profile;
     userRepository.save(user);
 
     res.json(user);
