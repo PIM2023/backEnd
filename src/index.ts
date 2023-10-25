@@ -1,5 +1,6 @@
 import express from "express";
 import * as bodyParser from "body-parser";
+import cors from "cors";
 
 import { AppDataSource } from "./data-source";
 
@@ -10,6 +11,9 @@ AppDataSource.initialize()
     // create express app
     const app = express();
     app.use(bodyParser.json());
+
+    // Middlewares
+    app.use(cors());
 
     // Routes
     app.use(router);
