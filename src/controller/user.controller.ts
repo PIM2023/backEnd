@@ -38,8 +38,16 @@ export const getById = async (req: Request, res: Response) => {
 export const update = async (req: Request, res: Response) => {
   try {
     const userId = req.params.id;
-    const { email, firstName, lastName, avatar, height, weight, bornDate } =
-      req.body;
+    const {
+      username,
+      password,
+      email,
+      firstName,
+      lastName,
+      height,
+      weight,
+      bornDate,
+    } = req.body;
 
     const numericId = parseInt(userId);
     const user = await userRepository.findOne({
@@ -50,11 +58,11 @@ export const update = async (req: Request, res: Response) => {
     if (!user) return handleErrorResponse(res, "Usuario no encontrado", 404);
 
     const profile = user.profile;
-
+    if (username) user.username = username;
+    if (password) user.password = password;
     if (email) user.email = email;
     if (firstName) profile.firstName = firstName;
     if (lastName) profile.lastName = lastName;
-    if (avatar) profile.avatar = avatar;
     if (height) profile.height = height;
     if (weight) profile.weight = weight;
     if (bornDate) {
@@ -162,7 +170,7 @@ export const getProfile = async (req: Request, res: Response) => {
         };
       });
 
-      return res.json(sanitizedUsers);
+      return res.json(sanitizedUsers[0]);
     } else {
       handleErrorResponse(res, "Usuario no encontrado", 404);
     }
