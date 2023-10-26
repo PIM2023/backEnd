@@ -10,7 +10,7 @@ const profileRepository = dataSource.getRepository(Profile);
 export const register = async (req: Request, res: Response) => {
   try {
     const { username, email, password } = req.body;
-    const { firstName, lastName, avatar, height, weight, bornDate } = req.body;
+    const { firstName, lastName, height, weight, bornDate } = req.body;
 
     if (!username || !email || !password) {
       return handleErrorResponse(
@@ -46,7 +46,6 @@ export const register = async (req: Request, res: Response) => {
     const newProfile = new Profile();
     newProfile.firstName = firstName;
     newProfile.lastName = lastName;
-    if (avatar) newProfile.avatar = avatar;
     if (height) newProfile.height = height;
     if (weight) newProfile.weight = weight;
     newProfile.bornDate = new Date(bornDate);

@@ -95,14 +95,14 @@ export const remove = async (req: Request, res: Response) => {
 
 export const checkUsername = async (req: Request, res: Response) => {
   try {
-    const { username } = req.body;
+    const { username } = req.params;
     const user = await userRepository.findOneBy({ username: username });
 
     console.log(user);
     if (user) {
       return res.json({ exist: true });
     } else {
-      return res.json({ exist: false });
+      return res.status(404).json({ exist: false });
     }
   } catch (error) {
     handleErrorResponse(res, "Error al verificar el usuario", 500);
@@ -111,13 +111,13 @@ export const checkUsername = async (req: Request, res: Response) => {
 
 export const checkEmail = async (req: Request, res: Response) => {
   try {
-    const { email } = req.body;
+    const { email } = req.params;
     const user = await userRepository.findOneBy({ email: email });
 
     if (user) {
       return res.json({ exist: true });
     } else {
-      return res.json({ exist: false });
+      return res.status(404).json({ exist: false });
     }
   } catch (error) {
     handleErrorResponse(res, "Error al verificar el email", 500);
@@ -127,6 +127,7 @@ export const checkEmail = async (req: Request, res: Response) => {
 export const getProfile = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
+    const numericId = parseInt(id);
     let user;
 
     if (isNaN(Number(id))) {
@@ -165,4 +166,8 @@ export const getProfile = async (req: Request, res: Response) => {
   } catch (error) {
     handleErrorResponse(res, "Error al solicitar el perfil", 500);
   }
+};
+
+export const uploadAvatar = (req: Request, res: Response) => {
+  console.log(req.file);
 };

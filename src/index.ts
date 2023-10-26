@@ -10,9 +10,9 @@ AppDataSource.initialize()
   .then(async () => {
     // create express app
     const app = express();
-    app.use(bodyParser.json());
 
     // Middlewares
+    app.use(bodyParser.json());
     app.use(cors());
 
     // Routes
