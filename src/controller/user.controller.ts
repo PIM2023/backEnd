@@ -145,23 +145,27 @@ export const getProfile = async (req: Request, res: Response) => {
       });
     }
 
-    const sanitizedUsers = user.map((user) => {
-      const { id, username, email, profile } = user;
-      return {
-        id,
-        username,
-        email,
-        avatar: profile.avatar,
-        firstName: profile.firstName,
-        lastName: profile.lastName,
-        age: profile.age,
-        height: profile.height,
-        weight: profile.weight,
-        bornDate: profile.bornDate,
-      };
-    });
+    if (user.length == 1) {
+      const sanitizedUsers = user.map((user) => {
+        const { id, username, email, profile } = user;
+        return {
+          id,
+          username,
+          email,
+          avatar: profile.avatar,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          age: profile.age,
+          height: profile.height,
+          weight: profile.weight,
+          bornDate: profile.bornDate,
+        };
+      });
 
-    return res.json(sanitizedUsers);
+      return res.json(sanitizedUsers);
+    } else {
+      handleErrorResponse(res, "Usuario no encontrado", 404);
+    }
   } catch (error) {
     handleErrorResponse(res, "Error al solicitar el perfil", 500);
   }
