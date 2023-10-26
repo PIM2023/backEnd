@@ -9,9 +9,10 @@ const postRepository = dataSource.getRepository(Post);
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { text, image } = req.body;
+    const { text, image, id } = req.body;
     const numericId = parseInt(id);
+    const currentUser = await userRepository.findOneBy({ id: numericId });
+
     if (!image) {
       return handleErrorResponse(res, "Imagen requerida", 400);
     }
@@ -24,10 +25,9 @@ export const create = async (req: Request, res: Response) => {
     newPost.text = text;
     newPost.image = image;
     newPost.likes = 0;
+    newPost.user = currentUser;
 
     const savedPost = await postRepository.save(newPost);
-    const currentUser = await userRepository.findOneBy({ id: numericId });
-    currentUser.posts.push(newPost);
 
     res.json(savedPost);
   } catch (error) {
@@ -40,12 +40,12 @@ export const remove = async (req: Request, res: Response) => {
     const { postId } = req.params;
     const numericId = parseInt(postId);
 
-    const post = await postRepository.findOneBy({ id: 1 });
+    const post = await postRepository.findOneBy({ id: numericId });
 
     if (!post) return handleErrorResponse(res, "Post no encontrado", 404);
 
     await postRepository.remove(post);
-    return res.json("Post eliminado");
+    return res.json(`Post ${numericId} eliminado`);
   } catch (error) {
     handleErrorResponse(res, "Error al borrar el post", 500);
   }
@@ -53,13 +53,25 @@ export const remove = async (req: Request, res: Response) => {
 
 export const getById = async (req: Request, res: Response) => {
   try {
-    const { postId } = req.params;
-    const numericId = parseInt(postId);
-    const post = await postRepository.findOneBy({ id: numericId });
-    //FIXME igual falta parsearlo a int
+    const { id } = req.params;
+    const numericId = parseInt(id);
+    const post = await postRepository.find({
+      where: { id: numericId },
+      relations: { user: true },
+    });
 
     if (post) {
-      return res.json(post);
+      const sanitizedPost = post.map((post) => {
+        return {
+          id: post.id,
+          text: post.text,
+          image: post.image,
+          likes: post.likes,
+          username: post.user.username,
+        };
+      });
+
+      return res.json(sanitizedPost);
     } else {
       handleErrorResponse(res, "Post no encontrado", 404);
     }
@@ -70,8 +82,23 @@ export const getById = async (req: Request, res: Response) => {
 
 export const getAll = async (req: Request, res: Response) => {
   try {
-    const posts = await postRepository.find();
-    return res.json(posts);
+    const posts = await postRepository.find({
+      relations: { user: true },
+    });
+
+    if (posts) {
+      const sanitizedPost = posts.map((post) => {
+        return {
+          id: post.id,
+          text: post.text,
+          image: post.image,
+          likes: post.likes,
+          username: post.user.username,
+        };
+      });
+
+      return res.json(sanitizedPost);
+    }
   } catch (error) {
     handleErrorResponse(res, "Error al obtener los posts", 500);
   }
@@ -79,6 +106,26 @@ export const getAll = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
   try {
+    const { id } = req.params;
+    const { text, image } = req.body;
+    const numericId = parseInt(id);
+
+    const post = await postRepository.findOneBy({ id: numericId });
+
+    if (!post) return handleErrorResponse(res, "Post no encontrado", 404);
+
+    if (!text) {
+      return handleErrorResponse(res, "Texto requerido", 400);
+    }
+
+    if (!image) {
+      return handleErrorResponse(res, "Imagen requerida", 400);
+    }
+    post.text = text;
+    post.image = image;
+    const updatedPost = await postRepository.save(post);
+
+    return res.json(updatedPost);
   } catch (error) {
     handleErrorResponse(res, "Error al actualizar el post", 500);
   }

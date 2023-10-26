@@ -21,7 +21,7 @@ export class Post {
   @Column()
   image: string;
 
-  @Column()
+  @Column({ nullable: true })
   likes: number;
 
   @CreateDateColumn()
@@ -30,7 +30,7 @@ export class Post {
   @UpdateDateColumn()
   updatedAt: Date;
 
-  @OneToMany(() => Comment, (comment) => comment.post)
+  @OneToMany(() => Comment, (comment) => comment.post, { nullable: true })
   comments: Comment[];
 
   @ManyToOne(() => User, (user) => user.posts)
