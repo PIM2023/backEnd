@@ -60,7 +60,7 @@ export const getById = async (req: Request, res: Response) => {
       relations: { user: true },
     });
 
-    if (post) {
+    if (post.length > 0) {
       const sanitizedPost = post.map((post) => {
         return {
           id: post.id,
