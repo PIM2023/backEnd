@@ -9,7 +9,7 @@ const postRepository = dataSource.getRepository(Post);
 
 export const create = async (req: Request, res: Response) => {
   try {
-    const { text, image, id } = req.body;
+    const { text, image, id } = req.body; // id is the user id
     const numericId = parseInt(id);
     const currentUser = await userRepository.findOneBy({ id: numericId });
 
@@ -37,8 +37,8 @@ export const create = async (req: Request, res: Response) => {
 
 export const remove = async (req: Request, res: Response) => {
   try {
-    const { postId } = req.params;
-    const numericId = parseInt(postId);
+    const { id } = req.body;
+    const numericId = parseInt(id);
 
     const post = await postRepository.findOneBy({ id: numericId });
 
@@ -60,7 +60,7 @@ export const getById = async (req: Request, res: Response) => {
       relations: { user: true },
     });
 
-    if (post) {
+    if (post.length > 0) {
       const sanitizedPost = post.map((post) => {
         return {
           id: post.id,
@@ -106,23 +106,25 @@ export const getAll = async (req: Request, res: Response) => {
 
 export const update = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
-    const { text, image } = req.body;
-    const numericId = parseInt(id);
+    const { id, text, image } = req.body;
+    const post = await postRepository.findOneBy({ id: parseInt(id) });
 
-    const post = await postRepository.findOneBy({ id: numericId });
-
-    if (!post) return handleErrorResponse(res, "Post no encontrado", 404);
-
-    if (!text) {
-      return handleErrorResponse(res, "Texto requerido", 400);
+    if (!post) {
+      return handleErrorResponse(res, "Post no encontrado", 404);
     }
 
-    if (!image) {
-      return handleErrorResponse(res, "Imagen requerida", 400);
+    if (!text && !image) {
+      return handleErrorResponse(res, "Texto o imagen requeridos", 400);
     }
-    post.text = text;
-    post.image = image;
+
+    if (text) {
+      post.text = text;
+    }
+
+    if (image) {
+      post.image = image;
+    }
+
     const updatedPost = await postRepository.save(post);
 
     return res.json(updatedPost);

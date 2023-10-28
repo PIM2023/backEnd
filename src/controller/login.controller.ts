@@ -7,7 +7,7 @@ const userRepository = dataSource.getRepository(User);
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { username, password } = req.query;
+    const { username, password } = req.body;
 
     if (!username || !password) {
       return handleErrorResponse(res, "Usuario y contraseña requeridos", 400);
