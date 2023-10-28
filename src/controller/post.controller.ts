@@ -7,12 +7,9 @@ import { Post } from "../entity/Post";
 const userRepository = dataSource.getRepository(User);
 const postRepository = dataSource.getRepository(Post);
 
-export const create = async (
-  req: Request<{ id: string; text: string; image: string }>,
-  res: Response
-) => {
+export const create = async (req: Request, res: Response) => {
   try {
-    const { text, image, id } = req.params;
+    const { text, image, id } = req.body; // id is the user id
     const numericId = parseInt(id);
     const currentUser = await userRepository.findOneBy({ id: numericId });
 
@@ -40,7 +37,7 @@ export const create = async (
 
 export const remove = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id } = req.body;
     const numericId = parseInt(id);
 
     const post = await postRepository.findOneBy({ id: numericId });
@@ -107,12 +104,9 @@ export const getAll = async (req: Request, res: Response) => {
   }
 };
 
-export const update = async (
-  req: Request<{ id: string; text: string; image: string }>,
-  res: Response
-) => {
+export const update = async (req: Request, res: Response) => {
   try {
-    const { id, text, image } = req.params;
+    const { id, text, image } = req.body;
     const post = await postRepository.findOneBy({ id: parseInt(id) });
 
     if (!post) {
