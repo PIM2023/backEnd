@@ -40,8 +40,8 @@ export const create = async (
 
 export const remove = async (req: Request, res: Response) => {
   try {
-    const { postId } = req.params;
-    const numericId = parseInt(postId);
+    const { id } = req.params;
+    const numericId = parseInt(id);
 
     const post = await postRepository.findOneBy({ id: numericId });
 
