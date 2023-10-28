@@ -9,8 +9,9 @@ const profileRepository = dataSource.getRepository(Profile);
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.body;
-    const { firstName, lastName, height, weight, bornDate } = req.body;
+    const { username, email, password } = req.query;
+    const { firstName, lastName } = req.query;
+    const { height, weight, bornDate } = req.query;
 
     if (!username || !email || !password) {
       return handleErrorResponse(
@@ -28,27 +29,31 @@ export const register = async (req: Request, res: Response) => {
       );
     }
 
-    const existUsername = await userRepository.findOneBy({ username });
+    const usernameParsed = username.toString();
+    const existUsername = await userRepository.findOneBy({
+      username: usernameParsed,
+    });
     if (existUsername) {
       return handleErrorResponse(res, "El usuario ya existe", 400);
     }
 
-    const existEmail = await userRepository.findOneBy({ email });
+    const emailParsed = email.toString();
+    const existEmail = await userRepository.findOneBy({ email: emailParsed });
     if (existEmail) {
       return handleErrorResponse(res, "El email ya existe", 400);
     }
 
     const newUser = new User();
-    newUser.username = username;
-    newUser.email = email;
-    newUser.password = password;
+    newUser.username = username.toString();
+    newUser.email = email.toString();
+    newUser.password = password.toString();
 
     const newProfile = new Profile();
-    newProfile.firstName = firstName;
-    newProfile.lastName = lastName;
-    if (height) newProfile.height = height;
-    if (weight) newProfile.weight = weight;
-    newProfile.bornDate = new Date(bornDate);
+    newProfile.firstName = firstName.toString();
+    newProfile.lastName = lastName.toString();
+    if (height) newProfile.height = parseInt(height.toString());
+    if (weight) newProfile.weight = parseInt(weight.toString());
+    newProfile.bornDate = new Date(bornDate.toString());
     newProfile.age = Math.floor(
       (Date.now() - newProfile.bornDate.getTime()) / 1000 / 60 / 60 / 24 / 365
     );
