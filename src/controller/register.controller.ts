@@ -9,9 +9,9 @@ const profileRepository = dataSource.getRepository(Profile);
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { username, email, password } = req.query;
-    const { firstName, lastName } = req.query;
-    const { height, weight, bornDate } = req.query;
+    const { username, email, password } = req.body;
+    const { firstName, lastName } = req.body;
+    const { height, weight, bornDate } = req.body;
 
     if (!username || !email || !password) {
       return handleErrorResponse(
@@ -29,16 +29,12 @@ export const register = async (req: Request, res: Response) => {
       );
     }
 
-    const usernameParsed = username.toString();
-    const existUsername = await userRepository.findOneBy({
-      username: usernameParsed,
-    });
+    const existUsername = await userRepository.findOneBy({ username });
     if (existUsername) {
       return handleErrorResponse(res, "El usuario ya existe", 400);
     }
 
-    const emailParsed = email.toString();
-    const existEmail = await userRepository.findOneBy({ email: emailParsed });
+    const existEmail = await userRepository.findOneBy({ email });
     if (existEmail) {
       return handleErrorResponse(res, "El email ya existe", 400);
     }
