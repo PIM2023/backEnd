@@ -3,10 +3,11 @@ import * as postController from "../controller/post.controller";
 
 const router = Router();
 
-router.post("/", postController.create);
-router.delete("/", postController.remove);
 router.get("/", postController.getAll);
+
+router.post("/", postController.create);
 router.get("/:id", postController.getById);
-router.put("/", postController.update);
+router.put("/:id", postController.update);
+router.delete("/:id", postController.remove);
 
 export default router;
