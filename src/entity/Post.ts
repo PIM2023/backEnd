@@ -1,35 +1,38 @@
 import {
   Entity,
   Column,
+  PrimaryGeneratedColumn,
+  OneToMany,
+  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
-  PrimaryGeneratedColumn,
-  OneToOne,
-  JoinColumn,
-  OneToMany,
 } from "typeorm";
 import { User } from "./User";
 import { Comment } from "./Comment";
 
-// revisar import, solo lo he copiado de profile
-
 @Entity()
 export class Post {
   @PrimaryGeneratedColumn()
-  cod_pub: Number;
+  id: number;
 
   @Column({ nullable: true })
-  text: String;
+  text: string;
 
   @Column()
-  image: String;
+  image: string;
 
-  @Column()
-  likes: Number;
+  @Column({ nullable: true })
+  likes: number;
 
-  @OneToMany(() => Comment, (comment) => comment.post)
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
+
+  @OneToMany(() => Comment, (comment) => comment.post, { nullable: true })
   comments: Comment[];
 
-  // faltaría Clave ajena de user no?
-  // profile tmb dependiendo de cómo interpretemos el diagrama de clases
+  @ManyToOne(() => User, (user) => user.posts)
+  user: User;
 }

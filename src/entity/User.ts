@@ -7,7 +7,7 @@ import {
   OneToOne,
   JoinColumn,
   PrimaryColumn,
-  ManyToOne,
+  OneToMany,
 } from "typeorm";
 import { Profile } from "./Profile";
 import { Post } from "./Post";
@@ -18,13 +18,13 @@ export class User {
   id: number;
 
   @PrimaryColumn({ length: 50 })
-  username: String;
+  username: string;
 
   @Column({ unique: true })
-  email: String;
+  email: string;
 
   @Column()
-  password: String;
+  password: string;
 
   @CreateDateColumn()
   createdAt: Date;
@@ -35,4 +35,7 @@ export class User {
   @OneToOne(() => Profile, { cascade: true, onDelete: "CASCADE" })
   @JoinColumn()
   profile: Profile;
+
+  @OneToMany(() => Post, (post) => post.user)
+  posts: Post[];
 }

@@ -13,10 +13,10 @@ export class Brand {
   id: number;
 
   @Column({ unique: true })
-  brandCode: Number;
+  brandCode: number;
 
   @Column()
-  name: String;
+  name: string;
 
   @OneToMany(() => Product, (product) => product.brand)
   product: Product[];

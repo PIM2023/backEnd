@@ -1,24 +1,32 @@
 {
   "dependencies": {
     "body-parser": "^1.19.1",
+    "cors": "^2.8.5",
     "dotenv": "^16.3.1",
     "express": "^4.17.2",
-    "mysql": "^2.14.1",
-    "mysql2": "^3.6.1",
+    "multer": "^1.4.5-lts.1",
+    "mysql": "^2.18.1",
+    "mysql2": "^3.6.2",
     "reflect-metadata": "^0.1.13",
     "typeorm": "0.3.17"
   },
   "devDependencies": {
+    "@types/jest": "^29.5.6",
+    "@types/multer": "^1.4.9",
     "@types/node": "^16.18.58",
+    "@types/supertest": "^2.0.15",
+    "jest": "^29.7.0",
     "nodemon": "^3.0.1",
+    "ts-jest": "^29.1.1",
     "ts-node": "^10.7.0",
     "typescript": "^4.5.2"
   },
   "scripts": {
-    "build": "tsc --project tsconfig.json",
-    "start": "ts-node src/index.ts",
     "dev": "docker-compose up -d && nodemon --exec ts-node src/index.ts",
     "remove": "docker-compose down",
-    "typeorm": "typeorm-ts-node-commonjs"
+    "build": "tsc --project tsconfig.json",
+    "populate": "ts-node src/populate/index.ts",
+    "test": "docker-compose -f docker-compose.test.yml up -d && npx jest",
+    "remove-test": "docker-compose -f docker-compose.test.yml down"
   }
 }

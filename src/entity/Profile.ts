@@ -8,6 +8,7 @@ import {
   JoinColumn,
 } from "typeorm";
 import { User } from "./User";
+import { Blob } from "buffer";
 
 @Entity()
 export class Profile {
@@ -23,14 +24,14 @@ export class Profile {
   @Column()
   age: number;
 
-  @Column({ nullable: true })
-  avatar: String;
+  @Column({ type: "longblob", nullable: true })
+  avatar: Buffer;
 
   @Column({ nullable: true })
-  height: Number;
+  height: number;
 
   @Column({ nullable: true })
-  weight: Number;
+  weight: number;
 
   @Column({ nullable: true })
   bornDate: Date;

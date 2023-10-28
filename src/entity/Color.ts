@@ -7,7 +7,7 @@ export class Color {
   id: number;
 
   @Column()
-  name: String;
+  name: string;
 
   @OneToMany(() => Product, (product) => product.color)
   product: Product[];
