@@ -18,8 +18,8 @@ export class Post {
   @Column({ nullable: true })
   text: string;
 
-  @Column()
-  image: string;
+  @Column({ type: "longblob", nullable: true })
+  image: Buffer;
 
   @Column({ nullable: true, default: 0 })
   likes: number;
