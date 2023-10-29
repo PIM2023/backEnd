@@ -4,6 +4,7 @@ import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
 import { Equal } from "typeorm";
+import { ImageHandler } from "../utils/ImageHandler";
 
 const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
@@ -44,6 +45,7 @@ export const update = async (req: Request, res: Response) => {
       email,
       firstName,
       lastName,
+      avatar,
       height,
       weight,
       bornDate,
@@ -63,6 +65,7 @@ export const update = async (req: Request, res: Response) => {
     if (email) user.email = email;
     if (firstName) profile.firstName = firstName;
     if (lastName) profile.lastName = lastName;
+    if (avatar) profile.avatar = ImageHandler.decodeBase64ToBuffer(avatar);
     if (height) profile.height = height;
     if (weight) profile.weight = weight;
     if (bornDate) {
@@ -178,8 +181,4 @@ export const getProfile = async (req: Request, res: Response) => {
   } catch (error) {
     handleErrorResponse(res, "Error al solicitar el perfil", 500);
   }
-};
-
-export const uploadAvatar = (req: Request, res: Response) => {
-  console.log(req.file);
 };

@@ -26,8 +26,8 @@ export class Product {
   @Column({ nullable: true })
   description: string;
 
-  @Column()
-  image: string;
+  @Column({ type: "longblob" })
+  image: Buffer;
 
   @ManyToOne(() => Gender, (gender) => gender.product)
   gender: Gender;
