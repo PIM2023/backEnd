@@ -8,16 +8,16 @@ const userRepository = dataSource.getRepository(User);
 
 export const login = async (req: Request, res: Response) => {
   try {
-    const { username, password } = req.body;
+    const { email, password } = req.body;
 
-    if (!username || !password) {
+    if (!email || !password) {
       return handleErrorResponse(res, "Usuario y contraseña requeridos", 400);
     }
 
-    const usernameParsed = username.toString();
+    const emailParsed = email.toString();
 
     const user = await userRepository.findOne({
-      where: { username: usernameParsed },
+      where: { email: emailParsed },
       relations: { profile: true },
     });
     if (!user) {
