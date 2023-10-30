@@ -5,10 +5,8 @@ import {
   UpdateDateColumn,
   PrimaryGeneratedColumn,
   OneToOne,
-  JoinColumn,
 } from "typeorm";
 import { User } from "./User";
-import { Blob } from "buffer";
 
 @Entity()
 export class Profile {
