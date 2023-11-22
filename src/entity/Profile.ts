@@ -22,8 +22,8 @@ export class Profile {
   @Column()
   age: number;
 
-  @Column({ type: "longblob", nullable: true })
-  avatar: Buffer;
+  @Column({ nullable: true })
+  avatar: string;
 
   @Column({ nullable: true })
   height: number;

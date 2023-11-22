@@ -2,7 +2,6 @@ import { Request, Response } from "express";
 import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
-import { ImageHandler } from "../utils/ImageHandler";
 
 const userRepository = dataSource.getRepository(User);
 
@@ -27,12 +26,6 @@ export const login = async (req: Request, res: Response) => {
     const isPasswordValid = user?.password === password;
     if (!isPasswordValid) {
       return handleErrorResponse(res, "Contraseña incorrecta", 400);
-    }
-
-    if (user.profile && user.profile.avatar) {
-      user.profile.avatar = ImageHandler.encodeBufferToBase64(
-        user.profile.avatar
-      );
     }
 
     return res.json(user);
