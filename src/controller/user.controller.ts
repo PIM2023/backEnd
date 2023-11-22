@@ -181,5 +181,5 @@ export const getProfile = async (req: Request, res: Response) => {
 };
 
 export const uploadAvatar = (req: Request, res: Response) => {
-  //console.log(req.file);
+  console.log(req.file);
 };
