@@ -12,7 +12,7 @@ AppDataSource.initialize()
     const app = express();
 
     // Middlewares
-    app.use(bodyParser.json());
+    app.use(bodyParser.json({ limit: "50mb" }));
     app.use(cors());
 
     // Routes

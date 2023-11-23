@@ -4,7 +4,7 @@ import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
 import { Equal } from "typeorm";
-import { ImageHandler } from "../utils/ImageHandler";
+import ImageManager from "../utils/ImageHandler";
 
 const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
@@ -65,7 +65,10 @@ export const update = async (req: Request, res: Response) => {
     if (email) user.email = email;
     if (firstName) profile.firstName = firstName;
     if (lastName) profile.lastName = lastName;
-    if (avatar) profile.avatar = ImageHandler.decodeBase64ToBuffer(avatar);
+    if (avatar) {
+      let imageManager = new ImageManager();
+      profile.avatar = imageManager.saveImage(numericId, "avatar", avatar);
+    }
     if (height) profile.height = height;
     if (weight) profile.weight = weight;
     if (bornDate) {
