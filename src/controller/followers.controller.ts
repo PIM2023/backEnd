@@ -100,7 +100,7 @@ export const unfollow = async (req: Request, res: Response) => {
       await followersRepository.remove(follow);
 
       return res.json(
-        "El usuario con el id" +
+        "El usuario con el id " +
           followerId +
           " ha dejado de seguir al usuario especificado con el id " +
           id
