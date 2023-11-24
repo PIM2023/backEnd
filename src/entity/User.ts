@@ -11,6 +11,7 @@ import {
 } from "typeorm";
 import { Profile } from "./Profile";
 import { Post } from "./Post";
+import { Followers } from "./Followers";
 
 @Entity()
 export class User {
@@ -38,4 +39,11 @@ export class User {
 
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
+
+  // Relación uno a muchos con Follower
+  @OneToMany(() => Followers, (follower) => follower.user, {
+    cascade: true,
+    onDelete: "CASCADE",
+  })
+  followers: Followers[];
 }
