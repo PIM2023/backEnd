@@ -53,21 +53,26 @@ export const getDatePostsCreatedInYear = async (
 
     if (currentUser) {
       const nuemricYear = parseInt(year);
-      const posts = currentUser[0].posts.filter((post) => {
-        if (post.createdAt.getFullYear() == nuemricYear) {
-          return post;
-        }
-      });
-      const datePostsSet = new Set<string>();
 
-      posts.forEach((post) => {
-        const date = post.createdAt.toISOString().split("T")[0];
-        datePostsSet.add(date);
-      });
+      if (isNaN(nuemricYear)) {
+        handleErrorResponse(res, "El año debe ser un numero", 400);
+      } else {
+        const posts = currentUser[0].posts.filter((post) => {
+          if (post.createdAt.getFullYear() == nuemricYear) {
+            return post;
+          }
+        });
+        const datePostsSet = new Set<string>();
 
-      const datePosts = Array.from(datePostsSet);
+        posts.forEach((post) => {
+          const date = post.createdAt.toISOString().split("T")[0];
+          datePostsSet.add(date);
+        });
 
-      return res.json(datePosts);
+        const datePosts = Array.from(datePostsSet);
+
+        return res.json(datePosts);
+      }
     } else {
       handleErrorResponse(res, "Usuario no encontrado", 404);
     }
@@ -89,18 +94,23 @@ export const getCreatedPostsByDate = async (req: Request, res: Response) => {
       const nuemricYear = parseInt(year);
       const numericMonth = parseInt(month);
       const numericDay = parseInt(day);
-      const posts = currentUser[0].posts.filter((post) => {
-        let postDate = post.createdAt;
-        if (
-          postDate.getFullYear() == nuemricYear &&
-          postDate.getMonth() + 1 == numericMonth &&
-          postDate.getDate() == numericDay
-        ) {
-          return post;
-        }
-      });
 
-      return res.json(posts);
+      if (isNaN(nuemricYear) || isNaN(numericMonth) || isNaN(numericDay)) {
+        handleErrorResponse(res, "La fechas deben de ser un numero", 400);
+      } else {
+        const posts = currentUser[0].posts.filter((post) => {
+          let postDate = post.createdAt;
+          if (
+            postDate.getFullYear() == nuemricYear &&
+            postDate.getMonth() + 1 == numericMonth &&
+            postDate.getDate() == numericDay
+          ) {
+            return post;
+          }
+        });
+
+        return res.json(posts);
+      }
     } else {
       handleErrorResponse(res, "Usuario no encontrado", 404);
     }
