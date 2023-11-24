@@ -100,16 +100,7 @@ export const getCreatedPostsByDate = async (req: Request, res: Response) => {
         }
       });
 
-      const datePostsSet = new Set<string>();
-
-      posts.forEach((post) => {
-        const date = post.createdAt.toISOString().split("T")[0];
-        datePostsSet.add(date);
-      });
-
-      const datePosts = Array.from(datePostsSet);
-
-      return res.json(datePosts);
+      return res.json(posts);
     } else {
       handleErrorResponse(res, "Usuario no encontrado", 404);
     }
