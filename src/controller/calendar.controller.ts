@@ -52,13 +52,13 @@ export const getDatePostsCreatedInYear = async (
     });
 
     if (currentUser) {
-      const nuemricYear = parseInt(year);
+      const numericYear = parseInt(year);
 
-      if (isNaN(nuemricYear)) {
+      if (isNaN(numericYear)) {
         handleErrorResponse(res, "El año debe ser un numero", 400);
       } else {
         const posts = currentUser[0].posts.filter((post) => {
-          if (post.createdAt.getFullYear() == nuemricYear) {
+          if (post.createdAt.getFullYear() == numericYear) {
             return post;
           }
         });
@@ -91,17 +91,17 @@ export const getCreatedPostsByDate = async (req: Request, res: Response) => {
     });
 
     if (currentUser) {
-      const nuemricYear = parseInt(year);
+      const numericYear = parseInt(year);
       const numericMonth = parseInt(month);
       const numericDay = parseInt(day);
 
-      if (isNaN(nuemricYear) || isNaN(numericMonth) || isNaN(numericDay)) {
+      if (isNaN(numericYear) || isNaN(numericMonth) || isNaN(numericDay)) {
         handleErrorResponse(res, "La fechas deben de ser un numero", 400);
       } else {
         const posts = currentUser[0].posts.filter((post) => {
           let postDate = post.createdAt;
           if (
-            postDate.getFullYear() == nuemricYear &&
+            postDate.getFullYear() == numericYear &&
             postDate.getMonth() + 1 == numericMonth &&
             postDate.getDate() == numericDay
           ) {
