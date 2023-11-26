@@ -3,7 +3,7 @@ import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Post } from "../entity/Post";
-import { ImageHandler } from "../utils/ImageHandler";
+import ImageManager from "../utils/ImageHandler";
 
 const userRepository = dataSource.getRepository(User);
 const postRepository = dataSource.getRepository(Post);
@@ -19,11 +19,12 @@ export const getAll = async (req: Request, res: Response) => {
     }
 
     const sanitazedPost = posts.map((post) => {
+      let imageManager = new ImageManager();
       return {
         id: post.id,
         username: post.user.username,
         text: post.text,
-        image: ImageHandler.encodeBufferToBase64(post.image),
+        image: post.image,
         likes: post.likes,
         comments: post.comments,
       };
@@ -53,7 +54,7 @@ export const getById = async (req: Request, res: Response) => {
       id: post.id,
       username: post.user.username,
       text: post.text,
-      image: ImageHandler.encodeBufferToBase64(post.image),
+      image: post.image,
       likes: post.likes,
       comments: post.comments,
     };
@@ -65,6 +66,8 @@ export const getById = async (req: Request, res: Response) => {
 };
 
 export const create = async (req: Request, res: Response) => {
+  let imageManager = new ImageManager();
+
   try {
     const { userId, text, image } = req.body;
 
@@ -84,7 +87,11 @@ export const create = async (req: Request, res: Response) => {
 
     const newPost = new Post();
     newPost.text = text;
-    newPost.image = ImageHandler.decodeBase64ToBuffer(image);
+    newPost.image = imageManager.saveImage(
+      userId,
+      `${Math.random().toString(36).substring(2)}`,
+      image
+    );
     newPost.user = currentUser;
 
     const savedPost = await postRepository.save(newPost);
@@ -92,7 +99,7 @@ export const create = async (req: Request, res: Response) => {
       id: savedPost.id,
       username: savedPost.user.username,
       text: savedPost.text,
-      image: ImageHandler.encodeBufferToBase64(savedPost.image),
+      image: savedPost.image,
       likes: savedPost.likes,
       comments: savedPost.comments,
     };
@@ -117,16 +124,12 @@ export const update = async (req: Request, res: Response) => {
       return handleErrorResponse(res, "Post no encontrado", 404);
     }
 
-    if (!text && !image) {
-      return handleErrorResponse(res, "Texto o imagen requeridos", 400);
+    if (!text) {
+      return handleErrorResponse(res, "Texto requeridos", 400);
     }
 
     if (text) {
       post.text = text;
-    }
-
-    if (image) {
-      post.image = ImageHandler.decodeBase64ToBuffer(image);
     }
 
     const updatedPost = await postRepository.save(post);
@@ -135,7 +138,7 @@ export const update = async (req: Request, res: Response) => {
       id: updatedPost.id,
       username: updatedPost.user.username,
       text: updatedPost.text,
-      image: ImageHandler.encodeBufferToBase64(updatedPost.image),
+      image: updatedPost.image,
       likes: updatedPost.likes,
       comments: updatedPost.comments,
     };

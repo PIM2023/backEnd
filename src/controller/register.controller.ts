@@ -3,7 +3,7 @@ import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
-import { ImageHandler } from "../utils/ImageHandler";
+import ImageManager from "../utils/ImageHandler";
 
 const userRepository = dataSource.getRepository(User);
 const profileRepository = dataSource.getRepository(Profile);
@@ -48,7 +48,6 @@ export const register = async (req: Request, res: Response) => {
     const newProfile = new Profile();
     newProfile.firstName = firstName.toString();
     newProfile.lastName = lastName.toString();
-    if (avatar) newProfile.avatar = ImageHandler.decodeBase64ToBuffer(avatar);
     if (height) newProfile.height = parseInt(height.toString());
     if (weight) newProfile.weight = parseInt(weight.toString());
     newProfile.bornDate = new Date(bornDate.toString());
@@ -61,11 +60,18 @@ export const register = async (req: Request, res: Response) => {
     await profileRepository.save(newProfile);
     const savedUser = await userRepository.save(newUser);
 
+    if (avatar) {
+      let imageManager = new ImageManager();
+      newProfile.avatar = imageManager.saveImage(newUser.id, "avatar", avatar);
+    }
+    await profileRepository.save(newProfile);
+
     res.json(savedUser);
   } catch (error) {
     if (error.code === "ER_DUP_ENTRY") {
       handleErrorResponse(res, "El usuario ya existe", 400);
     } else {
+      console.log(error);
       handleErrorResponse(res, "Error al guardar el usuario", 500);
     }
   }

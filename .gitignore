@@ -6,6 +6,7 @@ temp/
 
 # Compiled files
 /build
+/uploads
 
 # Config files
 .env
