@@ -31,10 +31,4 @@ readdirSync(__dirname).filter((file) => {
   }
 });
 
-// Error 404
-debug(`  - * -> 404`);
-router.get("*", (req: Request, res: Response) => {
-  return res.status(404).json("404 Not Found");
-});
-
 export default router;
