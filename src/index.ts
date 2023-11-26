@@ -1,6 +1,7 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
+import path from "path";
 import * as dotenv from "dotenv";
 dotenv.config();
 
@@ -16,6 +17,9 @@ AppDataSource.initialize()
     // Middlewares
     app.use(bodyParser.json({ limit: "50mb" }));
     app.use(cors());
+
+    // Configurar Express para servir archivos estáticos desde la carpeta 'uploads'
+    app.use("/uploads", express.static(path.join(__dirname, "uploads")));
 
     // Routes
     app.use(router);
