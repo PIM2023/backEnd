@@ -1,6 +1,8 @@
 import express from "express";
 import * as bodyParser from "body-parser";
 import cors from "cors";
+import * as dotenv from "dotenv";
+dotenv.config();
 
 import { AppDataSource } from "./data-source";
 
@@ -19,10 +21,12 @@ AppDataSource.initialize()
     app.use(router);
 
     // start express server
-    app.listen(3000);
+    app.listen(process.env.PORT || 3000);
 
     console.log(
-      "Express server has started on port 3000. Open http://localhost:3000 to see results"
+      `Express server has started on port ${process.env.PORT || 3000}. Open ${
+        process.env.SERVER_URL
+      } to see results`
     );
   })
   .catch((error) => console.log(error));
