@@ -19,7 +19,7 @@ AppDataSource.initialize()
     app.use(cors());
 
     // Configurar Express para servir archivos estáticos desde la carpeta 'uploads'
-    app.use("/uploads", express.static(path.join(__dirname, "uploads")));
+    app.use("/uploads", express.static(path.join(__dirname, "../", "uploads")));
 
     // Routes
     app.use(router);
