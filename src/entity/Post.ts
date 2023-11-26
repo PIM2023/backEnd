@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { User } from "./User";
 import { Comment } from "./Comment";
+import { Tag } from "./Tag";
 
 @Entity()
 export class Post {
@@ -35,4 +36,7 @@ export class Post {
 
   @ManyToOne(() => User, (user) => user.posts)
   user: User;
+
+  @OneToMany(() => Tag, (tags) => tags.post, { nullable: true })
+  tags: Tag[];
 }
