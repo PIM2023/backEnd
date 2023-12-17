@@ -23,6 +23,24 @@ export class Profile {
   age: number;
 
   @Column({ nullable: true })
+  pronouns: string;
+
+  @Column({ nullable: true })
+  bio: string;
+
+  @Column({ nullable: true })
+  isPrivate: boolean;
+
+  @Column({ nullable: true })
+  instagram_username: string;
+
+  @Column({ nullable: true })
+  twitter_username: string;
+
+  @Column({ nullable: true })
+  pinterest_username: string;
+
+  @Column({ nullable: true })
   avatar: string;
 
   @Column({ nullable: true })

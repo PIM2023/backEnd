@@ -29,6 +29,12 @@ export class Followers {
   @Column()
   followingId: number;
 
+  @Column({ nullable: true })
+  following_avatar: string;
+
+  @Column()
+  following_username: string;
+
   @CreateDateColumn()
   createdAt: Date;
 

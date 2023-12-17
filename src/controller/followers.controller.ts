@@ -56,7 +56,10 @@ export const follow = async (req: Request, res: Response) => {
     const { id } = req.params;
     const numericId = parseInt(id);
     const { followerId } = req.body;
-    const user = await userRepository.findOne({ where: { id: numericId } });
+    const user = await userRepository.findOne({
+      where: { id: numericId },
+      relations: { profile: true },
+    });
 
     if (!user) return handleErrorResponse(res, "Usuario no encontrado", 404);
     if (user.id === followerId)
@@ -68,10 +71,13 @@ export const follow = async (req: Request, res: Response) => {
     )
       return handleErrorResponse(res, "Ya sigues a este usuario", 400);
 
+    console.log(user.profile);
     const newFollower = new Followers();
     newFollower.user = user;
     newFollower.followingId = numericId;
     newFollower.followerId = followerId;
+    newFollower.following_avatar = user.profile.avatar;
+    newFollower.following_username = user.username;
 
     const follower = await followersRepository.save(newFollower);
 
