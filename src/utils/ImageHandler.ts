@@ -8,7 +8,7 @@ class ImageHandler {
   private baseFolder: string;
 
   constructor() {
-    const rootPath = process.cwd();
+    const rootPath = path.join(__dirname, "../", "../");
     this.baseFolder = path.join(rootPath, "uploads");
 
     if (!fs.existsSync(this.baseFolder)) {

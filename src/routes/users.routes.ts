@@ -6,6 +6,7 @@ const router = Router();
 router.get("/", userController.all);
 router.get("/:id", userController.getById);
 router.get("/:id/profile", userController.getProfile);
+router.get("/:id/match", userController.matchUsername);
 
 router.put("/:id", userController.update);
 
