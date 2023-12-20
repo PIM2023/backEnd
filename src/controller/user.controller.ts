@@ -166,7 +166,6 @@ export const checkUsername = async (req: Request, res: Response) => {
     const { username } = req.params;
     const user = await userRepository.findOneBy({ username: username });
 
-    console.log(user);
     if (user) {
       return res.json({ exist: true });
     } else {
