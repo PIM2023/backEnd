@@ -20,18 +20,21 @@ export const getFollowers = async (req: Request, res: Response) => {
     if (!followers)
       return handleErrorResponse(res, "Usuario no encontrado", 404);
 
-    const sanitazedFollowers = followers.map(async (follower) => {
-      const user = await userRepository.findOne({
-        where: { id: follower.followerId },
-      });
-      return {
-        follower: {
+    const sanitazedFollowers = await Promise.all(
+      followers.map(async (follower) => {
+        const user = await userRepository.findOne({
+          where: { id: follower.followerId },
+          relations: { profile: true },
+        });
+        return {
           id: follower.followerId,
           username: user.username,
           avatar: user.profile.avatar,
-        },
-      };
-    });
+        };
+      })
+    );
+
+    console.log(sanitazedFollowers);
 
     return res.json(sanitazedFollowers);
   } catch (error) {
