@@ -11,16 +11,31 @@ export const getFollowers = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const numericId = parseInt(id);
+
     const followers = await followersRepository.find({
       where: { followingId: numericId },
+      relations: { user: true },
     });
 
-    if (followers) {
-      return res.json(followers);
-    } else {
-      handleErrorResponse(res, "Usuario no encontrado", 404);
-    }
+    if (!followers)
+      return handleErrorResponse(res, "Usuario no encontrado", 404);
+
+    const sanitazedFollowers = followers.map(async (follower) => {
+      const user = await userRepository.findOne({
+        where: { id: follower.followerId },
+      });
+      return {
+        follower: {
+          id: follower.followerId,
+          username: user.username,
+          avatar: user.profile.avatar,
+        },
+      };
+    });
+
+    return res.json(sanitazedFollowers);
   } catch (error) {
+    console.log(error);
     handleErrorResponse(
       res,
       "Error al obtener los followers del id especificado",
@@ -56,7 +71,10 @@ export const follow = async (req: Request, res: Response) => {
     const { id } = req.params;
     const numericId = parseInt(id);
     const { followerId } = req.body;
-    const user = await userRepository.findOne({ where: { id: numericId } });
+    const user = await userRepository.findOne({
+      where: { id: numericId },
+      relations: { profile: true },
+    });
 
     if (!user) return handleErrorResponse(res, "Usuario no encontrado", 404);
     if (user.id === followerId)

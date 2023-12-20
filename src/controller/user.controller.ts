@@ -3,7 +3,7 @@ import { User } from "../entity/User";
 import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Profile } from "../entity/Profile";
-import { Equal } from "typeorm";
+import { Equal, Like } from "typeorm";
 import ImageManager from "../utils/ImageHandler";
 
 const userRepository = dataSource.getRepository(User);
@@ -77,12 +77,12 @@ export const update = async (req: Request, res: Response) => {
     }
     if (height) profile.height = height;
     if (weight) profile.weight = weight;
-    if (isPrivate) profile.private = isPrivate;
+    if (isPrivate) profile.isPrivate = isPrivate;
     if (pronouns) profile.pronouns = pronouns;
     if (description) profile.description = description;
-    if (instagram) profile.instagram = instagram;
-    if (twitter) profile.twitter = twitter;
-    if (pinterest) profile.pinterest = pinterest;
+    if (instagram) profile.instagram = "https://www.instagram.com/" + instagram;
+    if (twitter) profile.twitter = "https://www.twitter.com/" + twitter;
+    if (pinterest) profile.pinterest = "https://www.pinterest.es/" + pinterest;
     if (bornDate) {
       profile.bornDate = new Date(bornDate);
       profile.age = Math.floor(
@@ -95,6 +95,48 @@ export const update = async (req: Request, res: Response) => {
     res.json(user);
   } catch (error) {
     handleErrorResponse(res, "Error al actualizar el usuario", 500);
+  }
+};
+
+export const searchByUsername = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const username = String(id);
+
+    const users = await userRepository.find({
+      where: { username: Like(`%${username}%`) },
+      relations: { profile: true },
+    });
+
+    if (users) {
+      const sanitizedUsers = users.map((user) => {
+        const { id, username, email, profile } = user;
+        return {
+          id,
+          username,
+          email,
+          avatar: profile.avatar,
+          firstName: profile.firstName,
+          lastName: profile.lastName,
+          age: profile.age,
+          pronouns: profile.pronouns,
+          bio: profile.description,
+          isPrivate: profile.isPrivate,
+          instagram: profile.instagram,
+          twitter: profile.twitter,
+          pinterest: profile.pinterest,
+          height: profile.height,
+          weight: profile.weight,
+          bornDate: profile.bornDate,
+        };
+      });
+
+      return res.json(sanitizedUsers);
+    } else {
+      return res.status(404).json("No hay usuarios con ese username");
+    }
+  } catch (error) {
+    handleErrorResponse(res, "Error al verificar el usuario", 500);
   }
 };
 
@@ -183,6 +225,13 @@ export const getProfile = async (req: Request, res: Response) => {
           firstName: profile.firstName,
           lastName: profile.lastName,
           age: profile.age,
+          name: profile.name,
+          pronouns: profile.pronouns,
+          desciption: profile.description,
+          isPrivate: profile.isPrivate,
+          instagram: profile.instagram,
+          twitter: profile.twitter,
+          pinterest: profile.pinterest,
           height: profile.height,
           weight: profile.weight,
           bornDate: profile.bornDate,

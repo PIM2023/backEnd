@@ -32,7 +32,7 @@ export class Profile {
   weight: number;
 
   @Column({ default: false })
-  private: boolean;
+  isPrivate: boolean;
 
   @Column({ nullable: true })
   pronouns: string;
