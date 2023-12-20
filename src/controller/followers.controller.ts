@@ -49,15 +49,28 @@ export const getFollowing = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const numericId = parseInt(id);
+
     const following = await followersRepository.find({
-      where: { followerId: numericId },
+      where: { followingId: numericId },
+      relations: { user: true },
     });
 
-    if (following) {
-      return res.json(following);
-    } else {
-      handleErrorResponse(res, "Usuario no encontrado", 404);
-    }
+    if (!following)
+      return handleErrorResponse(res, "Usuario no encontrado", 404);
+
+    const sanitazedFollowers = await Promise.all(
+      following.map(async (follower) => {
+        const user = await userRepository.findOne({
+          where: { id: follower.followingId },
+          relations: { profile: true },
+        });
+        return {
+          id: follower.followingId,
+          username: user.username,
+          avatar: user.profile.avatar,
+        };
+      })
+    );
   } catch (error) {
     handleErrorResponse(
       res,
@@ -71,7 +84,9 @@ export const follow = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const numericId = parseInt(id);
+
     const { followerId } = req.body;
+
     const user = await userRepository.findOne({
       where: { id: numericId },
       relations: { profile: true },
