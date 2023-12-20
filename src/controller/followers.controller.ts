@@ -7,27 +7,28 @@ import { handleErrorResponse } from "../utils/handleError";
 const userRepository = dataSource.getRepository(User);
 const followersRepository = dataSource.getRepository(Followers);
 
-export const getFollowers = async (req: Request, res: Response) => {
+// Usuarios a los que sigue el usuario con el id especificado
+export const getFollowing = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const numericId = parseInt(id);
 
-    const followers = await followersRepository.find({
-      where: { followingId: numericId },
+    const users = await followersRepository.find({
+      where: { followerId: numericId },
       relations: { user: true },
     });
 
-    if (!followers)
-      return handleErrorResponse(res, "Usuario no encontrado", 404);
+    if (users.length === 0)
+      return handleErrorResponse(res, "No estas siguiendo a nadie", 404);
 
     const sanitazedFollowers = await Promise.all(
-      followers.map(async (follower) => {
+      users.map(async (follower) => {
         const user = await userRepository.findOne({
-          where: { id: follower.followerId },
+          where: { id: follower.followingId },
           relations: { profile: true },
         });
         return {
-          id: follower.followerId,
+          id: follower.followingId,
           username: user.username,
           avatar: user.profile.avatar,
         };
@@ -45,32 +46,34 @@ export const getFollowers = async (req: Request, res: Response) => {
   }
 };
 
-export const getFollowing = async (req: Request, res: Response) => {
+// Usuarios que siguen al usuario con el id especificado
+export const getFollowers = async (req: Request, res: Response) => {
   try {
     const { id } = req.params;
     const numericId = parseInt(id);
 
-    const following = await followersRepository.find({
+    const followers = await followersRepository.find({
       where: { followingId: numericId },
       relations: { user: true },
     });
 
-    if (!following)
-      return handleErrorResponse(res, "Usuario no encontrado", 404);
+    if (followers.length === 0)
+      return handleErrorResponse(res, "Nadie te esta siguiendo 🥹", 404);
 
     const sanitazedFollowers = await Promise.all(
-      following.map(async (follower) => {
+      followers.map(async (follower) => {
         const user = await userRepository.findOne({
-          where: { id: follower.followingId },
+          where: { id: follower.followerId },
           relations: { profile: true },
         });
         return {
-          id: follower.followingId,
+          id: follower.followerId,
           username: user.username,
           avatar: user.profile.avatar,
         };
       })
     );
+    return res.json(sanitazedFollowers);
   } catch (error) {
     handleErrorResponse(
       res,
