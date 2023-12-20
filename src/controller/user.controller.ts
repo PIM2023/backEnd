@@ -216,25 +216,11 @@ export const getProfile = async (req: Request, res: Response) => {
 
     if (user.length == 1) {
       const sanitizedUsers = user.map((user) => {
-        const { id, username, email, profile } = user;
         return {
-          id,
-          username,
-          email,
-          avatar: profile.avatar,
-          firstName: profile.firstName,
-          lastName: profile.lastName,
-          age: profile.age,
-          name: profile.name,
-          pronouns: profile.pronouns,
-          desciption: profile.description,
-          isPrivate: profile.isPrivate,
-          instagram: profile.instagram,
-          twitter: profile.twitter,
-          pinterest: profile.pinterest,
-          height: profile.height,
-          weight: profile.weight,
-          bornDate: profile.bornDate,
+          id: user.id,
+          username: user.username,
+          email: user.email,
+          profile: user.profile,
         };
       });
 
