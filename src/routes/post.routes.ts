@@ -3,10 +3,13 @@ import * as postController from "../controller/post.controller";
 
 const router = Router();
 
-router.get("/:userId", postController.getAll);
 router.post("/", postController.create);
 
+router.get("/feed/:userId", postController.getAll);
+
+router.get("/:id", postController.getById);
 router.get("/:id/:userId", postController.getById);
+
 router.post("/:userId", postController.getPosts);
 router.put("/:id", postController.update);
 router.delete("/:id", postController.remove);

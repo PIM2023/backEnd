@@ -66,6 +66,34 @@ export const getById = async (req: Request, res: Response) => {
   try {
     const { id, userId } = req.params;
     const numericId = parseInt(id);
+
+    if (!userId) {
+      const post = await postRepository.findOne({
+        where: { id: numericId },
+        relations: { user: true, comments: true },
+        order: { createdAt: "DESC" },
+      });
+
+      const postUser = await userRepository.findOne({
+        where: { id: post.user.id },
+        relations: { profile: true },
+      });
+
+      const sanitizedPost = await {
+        id: post.id,
+        text: post.text,
+        image: post.image,
+        user: {
+          username: postUser.username,
+          avatar: postUser.profile.avatar,
+        },
+        likes: post.likes,
+        hasLiked: false,
+        comments: post.comments,
+      };
+
+      return res.json(sanitizedPost);
+    }
     const numericUserId = parseInt(userId);
 
     const post = await postRepository.findOne({
