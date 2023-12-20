@@ -34,8 +34,6 @@ export const getFollowers = async (req: Request, res: Response) => {
       })
     );
 
-    console.log(sanitazedFollowers);
-
     return res.json(sanitazedFollowers);
   } catch (error) {
     console.log(error);
