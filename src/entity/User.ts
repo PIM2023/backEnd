@@ -12,6 +12,8 @@ import {
 import { Profile } from "./Profile";
 import { Post } from "./Post";
 import { Followers } from "./Followers";
+import { PostLikes } from "./PostLikes";
+import { Comment } from "./Comment";
 
 @Entity()
 export class User {
@@ -27,11 +29,8 @@ export class User {
   @Column()
   password: string;
 
-  @CreateDateColumn()
-  createdAt: Date;
-
-  @UpdateDateColumn()
-  updatedAt: Date;
+  @OneToMany(() => PostLikes, (postLike) => postLike.user)
+  likes: PostLikes[];
 
   @OneToOne(() => Profile, { cascade: true, onDelete: "CASCADE" })
   @JoinColumn()
@@ -40,10 +39,19 @@ export class User {
   @OneToMany(() => Post, (post) => post.user)
   posts: Post[];
 
+  @OneToMany(() => Comment, (comment) => comment.user)
+  comments: Comment[];
+
   // Relación uno a muchos con Follower
   @OneToMany(() => Followers, (follower) => follower.user, {
     cascade: true,
     onDelete: "CASCADE",
   })
   followers: Followers[];
+
+  @CreateDateColumn()
+  createdAt: Date;
+
+  @UpdateDateColumn()
+  updatedAt: Date;
 }

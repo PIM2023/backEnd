@@ -3,11 +3,18 @@ import * as postController from "../controller/post.controller";
 
 const router = Router();
 
-router.get("/", postController.getAll);
-
+router.get("/:userId", postController.getAll);
 router.post("/", postController.create);
-router.get("/:id", postController.getById);
+
+router.get("/:id/:userId", postController.getById);
+router.post("/:userId", postController.getPosts);
 router.put("/:id", postController.update);
 router.delete("/:id", postController.remove);
+
+router.post("/:id/like", postController.like);
+router.post("/:id/unlike", postController.unlike);
+
+router.post("/:id/comment", postController.comment);
+router.post("/:id/uncomment", postController.uncomment);
 
 export default router;

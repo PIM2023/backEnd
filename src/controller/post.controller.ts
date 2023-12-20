@@ -4,31 +4,57 @@ import { AppDataSource as dataSource } from "../data-source";
 import { handleErrorResponse } from "../utils/handleError";
 import { Post } from "../entity/Post";
 import ImageManager from "../utils/ImageHandler";
+import { PostLikes } from "../entity/PostLikes";
+import { Comment } from "../entity/Comment";
 
 const userRepository = dataSource.getRepository(User);
 const postRepository = dataSource.getRepository(Post);
+const commentRepository = dataSource.getRepository(Comment);
+const postLikesRepository = dataSource.getRepository(PostLikes);
 
 export const getAll = async (req: Request, res: Response) => {
   try {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId);
+
+    const user = await userRepository.findOne({
+      where: { id: numericUserId },
+      relations: { profile: true },
+    });
+
+    if (!user) {
+      return handleErrorResponse(res, "Usuario no encontrado", 404);
+    }
+
     const posts = await postRepository.find({
       relations: { user: true, comments: true },
+      order: { createdAt: "DESC" },
     });
 
     if (!posts) {
       return handleErrorResponse(res, "No hay posts", 404);
     }
 
-    const sanitazedPost = posts.map((post) => {
-      let imageManager = new ImageManager();
-      return {
-        id: post.id,
-        username: post.user.username,
-        text: post.text,
-        image: post.image,
-        likes: post.likes,
-        comments: post.comments,
-      };
-    });
+    const sanitazedPost = await Promise.all(
+      posts.map(async (post) => {
+        const postUser = await userRepository.findOne({
+          where: { id: post.user.id },
+          relations: { profile: true },
+        });
+        return {
+          id: post.id,
+          text: post.text,
+          image: post.image,
+          user: {
+            username: postUser.username,
+            avatar: postUser.profile.avatar,
+          },
+          likes: post.likes,
+          hasLiked: await checkIfUserHasLikedPost(user, post),
+          comments: post.comments,
+        };
+      })
+    );
 
     return res.json(sanitazedPost);
   } catch (error) {
@@ -38,24 +64,44 @@ export const getAll = async (req: Request, res: Response) => {
 
 export const getById = async (req: Request, res: Response) => {
   try {
-    const { id } = req.params;
+    const { id, userId } = req.params;
     const numericId = parseInt(id);
+    const numericUserId = parseInt(userId);
 
     const post = await postRepository.findOne({
       where: { id: numericId },
       relations: { user: true, comments: true },
+      order: { createdAt: "DESC" },
     });
 
     if (!post) {
       return handleErrorResponse(res, "Post no encontrado", 404);
     }
 
-    const sanitizedPost = {
+    const user = await userRepository.findOne({
+      where: { id: numericUserId },
+      relations: { profile: true },
+    });
+
+    if (!user) {
+      return handleErrorResponse(res, "Usuario no encontrado", 404);
+    }
+
+    const postUser = await userRepository.findOne({
+      where: { id: post.user.id },
+      relations: { profile: true },
+    });
+
+    const sanitizedPost = await {
       id: post.id,
-      username: post.user.username,
       text: post.text,
       image: post.image,
+      user: {
+        username: postUser.username,
+        avatar: postUser.profile.avatar,
+      },
       likes: post.likes,
+      hasLiked: await checkIfUserHasLikedPost(user, post),
       comments: post.comments,
     };
 
@@ -72,7 +118,10 @@ export const create = async (req: Request, res: Response) => {
     const { userId, text, image } = req.body;
 
     const numericId = parseInt(userId);
-    const currentUser = await userRepository.findOneBy({ id: numericId });
+    const currentUser = await userRepository.findOne({
+      where: { id: numericId },
+      relations: { profile: true },
+    });
     if (!currentUser) {
       return handleErrorResponse(res, "Usuario no encontrado", 404);
     }
@@ -94,18 +143,24 @@ export const create = async (req: Request, res: Response) => {
     );
     newPost.user = currentUser;
 
-    const savedPost = await postRepository.save(newPost);
-    const sanitizedPost = {
-      id: savedPost.id,
-      username: savedPost.user.username,
-      text: savedPost.text,
-      image: savedPost.image,
-      likes: savedPost.likes,
-      comments: savedPost.comments,
+    const post = await postRepository.save(newPost);
+
+    const sanitizedPost = await {
+      id: post.id,
+      text: post.text,
+      image: post.image,
+      user: {
+        username: currentUser.username,
+        avatar: currentUser.profile.avatar,
+      },
+      likes: post.likes,
+      hasLiked: await checkIfUserHasLikedPost(currentUser, post),
+      comments: post.comments,
     };
 
     res.json(sanitizedPost);
   } catch (error) {
+    console.log(error);
     handleErrorResponse(res, "Error al crear el post", 500);
   }
 };
@@ -134,15 +189,23 @@ export const update = async (req: Request, res: Response) => {
 
     const updatedPost = await postRepository.save(post);
 
-    const sanitizedPost = {
-      id: updatedPost.id,
-      username: updatedPost.user.username,
-      text: updatedPost.text,
-      image: updatedPost.image,
-      likes: updatedPost.likes,
-      comments: updatedPost.comments,
-    };
+    const currentUser = await userRepository.findOne({
+      where: { id: post.user.id },
+      relations: { profile: true },
+    });
 
+    const sanitizedPost = await {
+      id: post.id,
+      text: post.text,
+      image: post.image,
+      user: {
+        username: currentUser.username,
+        avatar: currentUser.profile.avatar,
+      },
+      likes: post.likes,
+      hasLiked: await checkIfUserHasLikedPost(currentUser, post),
+      comments: post.comments,
+    };
     return res.json(sanitizedPost);
   } catch (error) {
     console.log(error);
@@ -165,4 +228,245 @@ export const remove = async (req: Request, res: Response) => {
     console.log(error);
     handleErrorResponse(res, "Error al borrar el post", 500);
   }
+};
+
+export const like = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id);
+
+    const userId = req.body.userId;
+    const numericUserId = parseInt(userId);
+
+    if (!userId) {
+      return handleErrorResponse(res, "Usuario requerido", 400);
+    }
+
+    const post = await postRepository.findOne({
+      where: { id: numericId },
+    });
+
+    if (!post) {
+      return handleErrorResponse(res, "Post no encontrado", 404);
+    }
+
+    const user = await userRepository.findOne({
+      where: { id: numericUserId },
+    });
+
+    if (!user) {
+      return handleErrorResponse(res, "Usuario no encontrado", 404);
+    }
+
+    // Verificar si el usuario ya le dio like al post
+    const existingLike = await postLikesRepository.query(
+      `SELECT * FROM post_likes WHERE userId = ${numericUserId} AND postId = ${numericId}`
+    );
+
+    if (existingLike.length > 0) {
+      return handleErrorResponse(res, "Ya diste like a este post", 400);
+    }
+
+    // Crear un nuevo like y asociarlo al post
+    let postLikes = new PostLikes();
+    postLikes.user = user;
+    postLikes.post = post;
+    await postLikesRepository.save(postLikes);
+
+    // Opcional: Incrementar el contador de likes en el post si tienes un campo para ello
+    post.likes = (post.likes || 0) + 1;
+    await postRepository.save(post);
+
+    return res.json({ message: "Like exitoso" });
+  } catch (error) {
+    console.log(error);
+    handleErrorResponse(res, "Error al dar like", 500);
+  }
+};
+export const unlike = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id);
+
+    const userId = req.body.userId;
+    const numericUserId = parseInt(userId);
+
+    if (!userId) {
+      return handleErrorResponse(res, "Usuario requerido", 400);
+    }
+
+    const post = await postRepository.findOne({
+      where: { id: numericId },
+    });
+
+    if (!post) {
+      return handleErrorResponse(res, "Post no encontrado", 404);
+    }
+
+    const user = await userRepository.findOne({
+      where: { id: numericUserId },
+    });
+
+    if (!user) {
+      return handleErrorResponse(res, "Usuario no encontrado", 404);
+    }
+
+    const existingLike = await postLikesRepository.query(
+      `SELECT * FROM post_likes WHERE userId = ${numericUserId} AND postId = ${numericId}`
+    );
+
+    if (existingLike.length !== 1) {
+      return handleErrorResponse(res, "Like no encontrado", 404);
+    }
+
+    await postLikesRepository.remove(existingLike);
+
+    post.likes = Math.max((post.likes || 0) - 1, 0);
+    await postRepository.save(post);
+
+    return res.json({ message: "Unlike exitoso" });
+  } catch (error) {
+    console.log(error);
+    handleErrorResponse(res, "Error al dar unlike", 500);
+  }
+};
+export const comment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id);
+
+    const { userId, text } = req.body;
+    const numericUserId = parseInt(userId);
+
+    if (!userId) {
+      return handleErrorResponse(res, "Usuario requerido", 400);
+    }
+
+    let post = await postRepository.findOne({
+      where: { id: numericId },
+    });
+
+    if (!post) {
+      return handleErrorResponse(res, "Post no encontrado", 404);
+    }
+
+    const user = await userRepository.findOne({
+      where: { id: numericUserId },
+    });
+
+    if (!user) {
+      return handleErrorResponse(res, "Usuario no encontrado", 404);
+    }
+
+    let comment = new Comment();
+    comment.user = user;
+    comment.post = post;
+    comment.text = text;
+
+    let commentSaved = await commentRepository.save(comment);
+
+    return res.json(commentSaved);
+  } catch (error) {
+    console.log(error);
+    handleErrorResponse(res, "Error al comentar", 500);
+  }
+};
+export const uncomment = async (req: Request, res: Response) => {
+  try {
+    const { id } = req.params;
+    const numericId = parseInt(id);
+
+    const { commentId } = req.body;
+    const numericCommentId = parseInt(commentId);
+
+    if (!commentId) {
+      return handleErrorResponse(res, "ID de comentario requerido", 400);
+    }
+
+    let post = await postRepository.findOne({
+      where: { id: numericId },
+    });
+
+    if (!post) {
+      return handleErrorResponse(res, "Post no encontrado", 404);
+    }
+
+    let comment = await commentRepository.findOne({
+      where: { id: numericCommentId },
+    });
+
+    if (!comment) {
+      return handleErrorResponse(res, "Comentario no encontrado", 404);
+    }
+
+    const commentToRemove = await commentRepository.findOne({
+      where: { id: numericCommentId },
+    });
+
+    await commentRepository.remove(commentToRemove);
+
+    return res.json({ message: "Comentario eliminado exitosamente" });
+  } catch (error) {
+    console.error(error);
+    handleErrorResponse(res, "Error al descomentar", 500);
+  }
+};
+export const getPosts = async (req: Request, res: Response) => {
+  try {
+    const { userId } = req.params;
+    const numericUserId = parseInt(userId);
+
+    const user = await userRepository.findOne({
+      where: { id: numericUserId },
+      relations: { profile: true },
+    });
+
+    if (!user) {
+      return handleErrorResponse(res, "Usuario no encontrado", 404);
+    }
+
+    const posts = await postRepository.find({
+      relations: { user: true, comments: true },
+      order: { createdAt: "DESC" },
+    });
+
+    if (posts.length === 0) {
+      return handleErrorResponse(res, "No hay posts", 404);
+    }
+
+    // Filter the posts to only return the ones created by the user
+    const filteredPosts = posts.filter((post) => post.user.id === user.id);
+
+    const sanitazedPost = await Promise.all(
+      filteredPosts.map(async (post) => {
+        return {
+          id: post.id,
+          text: post.text,
+          image: post.image,
+          user: {
+            username: user.username,
+            avatar: user.profile.avatar,
+          },
+          likes: post.likes,
+          hasLiked: await checkIfUserHasLikedPost(user, post),
+          comments: post.comments,
+        };
+      })
+    );
+
+    return res.json(sanitazedPost);
+  } catch (error) {
+    console.error(error);
+    handleErrorResponse(res, "Error al obtener los posts", 500);
+  }
+};
+
+const checkIfUserHasLikedPost = async (user: User, post: Post) => {
+  const liked = await postLikesRepository.query(
+    `SELECT * FROM post_likes WHERE userId = ${user.id} AND postId = ${post.id}`
+  );
+  if (liked.length > 0) {
+    return true;
+  }
+  return false;
 };

@@ -48,6 +48,12 @@ export const update = async (req: Request, res: Response) => {
       avatar,
       height,
       weight,
+      isPrivate,
+      pronouns,
+      description,
+      instagram,
+      twitter,
+      pinterest,
       bornDate,
     } = req.body;
 
@@ -71,6 +77,12 @@ export const update = async (req: Request, res: Response) => {
     }
     if (height) profile.height = height;
     if (weight) profile.weight = weight;
+    if (isPrivate) profile.private = isPrivate;
+    if (pronouns) profile.pronouns = pronouns;
+    if (description) profile.description = description;
+    if (instagram) profile.instagram = instagram;
+    if (twitter) profile.twitter = twitter;
+    if (pinterest) profile.pinterest = pinterest;
     if (bornDate) {
       profile.bornDate = new Date(bornDate);
       profile.age = Math.floor(

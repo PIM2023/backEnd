@@ -9,6 +9,7 @@ import {
 } from "typeorm";
 import { User } from "./User";
 import { Comment } from "./Comment";
+import { PostLikes } from "./PostLikes";
 
 @Entity()
 export class Post {
@@ -21,18 +22,21 @@ export class Post {
   @Column()
   image: string;
 
-  @Column({ nullable: true, default: 0 })
+  @Column({ default: 0 })
   likes: number;
+
+  @OneToMany(() => PostLikes, (postLikes) => postLikes.post, { nullable: true })
+  postLikes: PostLikes[];
+
+  @ManyToOne(() => User, (user) => user.posts)
+  user: User;
+
+  @OneToMany(() => Comment, (comment) => comment.post, { nullable: true })
+  comments: Comment[];
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @OneToMany(() => Comment, (comment) => comment.post, { nullable: true })
-  comments: Comment[];
-
-  @ManyToOne(() => User, (user) => user.posts)
-  user: User;
 }

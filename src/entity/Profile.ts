@@ -31,15 +31,33 @@ export class Profile {
   @Column({ nullable: true })
   weight: number;
 
+  @Column({ default: false })
+  private: boolean;
+
+  @Column({ nullable: true })
+  pronouns: string;
+
+  @Column({ nullable: true })
+  description: string;
+
+  @Column({ nullable: true })
+  instagram: string;
+
+  @Column({ nullable: true })
+  twitter: string;
+
+  @Column({ nullable: true })
+  pinterest: string;
+
   @Column({ nullable: true })
   bornDate: Date;
+
+  @OneToOne(() => User, (user) => user.profile)
+  user: User;
 
   @CreateDateColumn()
   createdAt: Date;
 
   @UpdateDateColumn()
   updatedAt: Date;
-
-  @OneToOne(() => User, (user) => user.profile)
-  user: User;
 }
