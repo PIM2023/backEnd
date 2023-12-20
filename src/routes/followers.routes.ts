@@ -8,4 +8,6 @@ router.get("/:id/following", followersController.getFollowing);
 router.post("/:id/follow", followersController.follow);
 router.delete("/:id/unfollow", followersController.unfollow);
 
+router.get("/:id/:userId", followersController.isFollowing);
+
 export default router;

@@ -149,3 +149,25 @@ export const unfollow = async (req: Request, res: Response) => {
     handleErrorResponse(res, "Error al dejar de seguir al usuario", 500);
   }
 };
+export const isFollowing = async (req: Request, res: Response) => {
+  try {
+    const { id, userId } = req.params;
+    if (!id || !userId)
+      return handleErrorResponse(res, "Faltan parametros", 400);
+
+    const numericId = parseInt(id);
+    const numericUserId = parseInt(userId);
+
+    const follow = await followersRepository.findOne({
+      where: { followingId: numericId, followerId: numericUserId },
+    });
+
+    if (follow) {
+      return res.json({ isFollowing: true });
+    } else {
+      return res.json({ isFollowing: false });
+    }
+  } catch (error) {
+    handleErrorResponse(res, "Error al verificar si el usuario sigue", 500);
+  }
+};
