@@ -28,7 +28,7 @@ export const getAll = async (req: Request, res: Response) => {
 
     const posts = await postRepository.find({
       relations: { user: true, comments: true },
-      order: { createdAt: "ASC" },
+      order: { createdAt: "DESC" },
     });
 
     if (!posts) {
