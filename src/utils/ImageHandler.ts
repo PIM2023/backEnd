@@ -59,7 +59,7 @@ class ImageHandler {
     let userIdString = userId.toString();
 
     const serverImagePath = path.join(
-      process.env.SERVER_URL,
+      "https://api-pin.crazyjmb.com",
       "uploads",
       userIdString,
       imageName
