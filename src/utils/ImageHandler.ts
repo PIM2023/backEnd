@@ -58,13 +58,7 @@ class ImageHandler {
     imageName = `${imageName}.png`;
     let userIdString = userId.toString();
 
-    const serverImagePath = path.join(
-      process.env.SERVER_URL,
-      "uploads",
-      userIdString,
-      imageName
-    );
-    return serverImagePath;
+    return `${process.env.SERVER_URL}/uploads/${userIdString}/${imageName}`;
   }
 }
 
