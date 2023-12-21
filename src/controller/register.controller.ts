@@ -63,6 +63,8 @@ export const register = async (req: Request, res: Response) => {
     if (avatar) {
       let imageManager = new ImageManager();
       newProfile.avatar = imageManager.saveImage(newUser.id, "avatar", avatar);
+    } else {
+      newProfile.avatar = `${process.env.SERVER_URL}/uploads/avatar.png`;
     }
     await profileRepository.save(newProfile);
 
